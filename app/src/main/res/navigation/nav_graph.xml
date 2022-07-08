@@ -7,8 +7,8 @@
     <fragment
         android:id="@+id/notesFragment"
         android:name="com.bikcodeh.todoapp.ui.fragments.notes.NotesFragment"
-        android:label="fragment_notes"
-        tools:layout="@layout/fragment_notes" >
+        android:label="@string/notes_title"
+        tools:layout="@layout/fragment_notes">
         <action
             android:id="@+id/action_notesFragment_to_addFragment"
             app:destination="@id/addFragment" />
@@ -19,8 +19,8 @@
     <fragment
         android:id="@+id/addFragment"
         android:name="com.bikcodeh.todoapp.ui.fragments.add.AddFragment"
-        android:label="fragment_add"
-        tools:layout="@layout/fragment_add" >
+        android:label="@string/add_title"
+        tools:layout="@layout/fragment_add">
         <action
             android:id="@+id/action_addFragment_to_notesFragment"
             app:destination="@id/notesFragment" />
@@ -28,8 +28,8 @@
     <fragment
         android:id="@+id/updateFragment"
         android:name="com.bikcodeh.todoapp.ui.fragments.update.UpdateFragment"
-        android:label="fragment_update"
-        tools:layout="@layout/fragment_update" >
+        android:label="@string/update_title"
+        tools:layout="@layout/fragment_update">
         <action
             android:id="@+id/action_updateFragment_to_notesFragment"
             app:destination="@id/notesFragment" />
