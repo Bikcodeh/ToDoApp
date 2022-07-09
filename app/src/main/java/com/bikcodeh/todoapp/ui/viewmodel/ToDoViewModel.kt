@@ -1,7 +1,10 @@
 package com.bikcodeh.todoapp.ui.viewmodel
 
+import android.text.TextUtils
+import androidx.annotation.IdRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bikcodeh.todoapp.R
 import com.bikcodeh.todoapp.data.model.ToDoData
 import com.bikcodeh.todoapp.domain.repository.ToDoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,16 +23,57 @@ class ToDoViewModel @Inject constructor(
     val notes: StateFlow<List<ToDoData>>
         get() = _notes.asStateFlow()
 
-    val events = Channel<ToDoUiEvents>(Channel.CONFLATED)
-    private val _events: Flow<ToDoUiEvents> = events.receiveAsFlow()
+    private val _formState: MutableStateFlow<FormUiState> = MutableStateFlow(FormUiState())
+    val formState: StateFlow<FormUiState>
+        get() = _formState.asStateFlow()
 
-    private fun observeEvents() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _events.collect { event ->
-                when (event) {
-                    ToDoUiEvents.GetAllNotes -> getAllNotes()
-                }
+    private val _events = Channel<ToDoValidationFormEvent>(Channel.CONFLATED)
+    val events: Flow<ToDoValidationFormEvent> = _events.receiveAsFlow()
+
+    fun onEvent(event: ToDoUiEvent) {
+        when (event) {
+            ToDoUiEvent.GetAllNotes -> getAllNotes()
+            is ToDoUiEvent.InsertNote -> insertNote(event.toDoData)
+            is ToDoUiEvent.ValidateForm -> validateForm(event.title, event.description)
+        }
+    }
+
+    private fun validateForm(title: String, description: String) {
+        if (TextUtils.isEmpty(title)) {
+            _formState.update { formUiState ->
+                formUiState.copy(
+                    isFormValid = false,
+                    titleError = R.string.title_required
+                )
             }
+        } else {
+            _formState.update { formUiState -> formUiState.copy(titleError = null) }
+        }
+        if (TextUtils.isEmpty(description)) {
+            _formState.update { formUiState ->
+                formUiState.copy(
+                    isFormValid = false,
+                    descriptionError = R.string.description_required
+                )
+            }
+        } else {
+            _formState.update { formUiState -> formUiState.copy(descriptionError = null) }
+        }
+        if (!TextUtils.isEmpty(title) && !TextUtils.isEmpty(description)) {
+            _formState.update { formUiState ->
+                formUiState.copy(
+                    isFormValid = true,
+                    titleError = null,
+                    descriptionError = null
+                )
+            }
+        }
+    }
+
+    private fun insertNote(toDoData: ToDoData) {
+        viewModelScope.launch(Dispatchers.IO) {
+            toDoRepository.insertNote(toDoData)
+            _events.send(ToDoValidationFormEvent.Success)
         }
     }
 
@@ -40,11 +84,22 @@ class ToDoViewModel @Inject constructor(
     }
 
     init {
-        observeEvents()
         getAllNotes()
     }
 
-    sealed class ToDoUiEvents {
-        object GetAllNotes : ToDoUiEvents()
+    data class FormUiState(
+        val isFormValid: Boolean = false,
+        @IdRes val titleError: Int? = null,
+        @IdRes val descriptionError: Int? = null
+    )
+
+    sealed class ToDoValidationFormEvent {
+        object Success : ToDoValidationFormEvent()
+    }
+
+    sealed class ToDoUiEvent {
+        object GetAllNotes : ToDoUiEvent()
+        data class InsertNote(val toDoData: ToDoData) : ToDoUiEvent()
+        data class ValidateForm(val title: String, val description: String) : ToDoUiEvent()
     }
 }

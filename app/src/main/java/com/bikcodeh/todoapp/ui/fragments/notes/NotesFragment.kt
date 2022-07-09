@@ -5,16 +5,27 @@ import android.view.*
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import com.bikcodeh.todoapp.R
 import com.bikcodeh.todoapp.databinding.FragmentNotesBinding
+import com.bikcodeh.todoapp.ui.adapter.ToDoAdapter
+import com.bikcodeh.todoapp.ui.viewmodel.ToDoViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class NotesFragment : Fragment() {
 
     private var _binding: FragmentNotesBinding? = null
     private val binding: FragmentNotesBinding
         get() = _binding!!
+
+    private val todoAdapter: ToDoAdapter by lazy { ToDoAdapter() }
+    private val toDoViewModel: ToDoViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,7 +48,9 @@ class NotesFragment : Fragment() {
                 return true
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        setUpViews()
         setUpListeners()
+        initObservers()
     }
 
     override fun onDestroyView() {
@@ -45,9 +58,26 @@ class NotesFragment : Fragment() {
         _binding = null
     }
 
+    private fun setUpViews() {
+        binding.notesRecyclerView.apply {
+            layoutManager = GridLayoutManager(context, 2)
+            adapter = todoAdapter
+        }
+    }
+
     private fun setUpListeners() {
         binding.addNoteFab.setOnClickListener {
             findNavController().navigate(R.id.action_notesFragment_to_addFragment)
+        }
+    }
+
+    private fun initObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+                toDoViewModel.notes.collect {
+                    todoAdapter.submitList(it)
+                }
+            }
         }
     }
 

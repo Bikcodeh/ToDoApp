@@ -21,6 +21,9 @@
     <string name="delete_all">Delete all</string>
     <string name="update_note">Update</string>
     <string name="delete_note">Delete</string>
+    <string name="title_required">Title required.</string>
+    <string name="description_required">Description required</string>
+    <string name="note_added">Note added!</string>
 
     <string-array name="priorities">
         <item>High Priority</item>
