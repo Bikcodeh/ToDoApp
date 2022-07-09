@@ -7,7 +7,9 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.bikcodeh.todoapp.databinding.ActivityMainBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -25,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController)
 
         binding.root.setOnClickListener {
-            navController.navigate(R.id.updateFragment)
+            navController.navigate(R.id.action_notesFragment_to_updateFragment)
         }
     }
 
