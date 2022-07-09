@@ -10,6 +10,8 @@ import com.bikcodeh.todoapp.R
 
 class AddFragment : Fragment() {
 
+    private lateinit var menuHost: MenuHost
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -19,7 +21,7 @@ class AddFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val menuHost: MenuHost = requireActivity()
+        menuHost = requireActivity()
 
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -27,7 +29,10 @@ class AddFragment : Fragment() {
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return true
+                return when (menuItem.itemId) {
+                    R.id.menu_add -> true
+                    else -> false
+                }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }

@@ -11,10 +11,18 @@
         tools:layout="@layout/fragment_notes">
         <action
             android:id="@+id/action_notesFragment_to_addFragment"
-            app:destination="@id/addFragment" />
+            app:destination="@id/addFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popEnterAnim="@anim/from_left"
+            app:popExitAnim="@anim/to_right" />
         <action
             android:id="@+id/action_notesFragment_to_updateFragment"
-            app:destination="@id/updateFragment" />
+            app:destination="@id/updateFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+            app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left" />
     </fragment>
     <fragment
         android:id="@+id/addFragment"
@@ -23,7 +31,9 @@
         tools:layout="@layout/fragment_add">
         <action
             android:id="@+id/action_addFragment_to_notesFragment"
-            app:destination="@id/notesFragment" />
+            app:destination="@id/notesFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right" />
     </fragment>
     <fragment
         android:id="@+id/updateFragment"
@@ -32,6 +42,8 @@
         tools:layout="@layout/fragment_update">
         <action
             android:id="@+id/action_updateFragment_to_notesFragment"
-            app:destination="@id/notesFragment" />
+            app:destination="@id/notesFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left" />
     </fragment>
 </navigation>

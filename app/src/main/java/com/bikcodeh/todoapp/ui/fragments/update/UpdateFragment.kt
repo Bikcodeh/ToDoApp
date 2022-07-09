@@ -27,7 +27,10 @@ class UpdateFragment : Fragment() {
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return true
+                return when(menuItem.itemId) {
+                    R.id.menu_save -> true
+                    else -> false
+                }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
