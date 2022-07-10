@@ -2,9 +2,12 @@ package com.bikcodeh.todoapp.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bikcodeh.todoapp.R
+import com.bikcodeh.todoapp.data.model.Priority
 import com.bikcodeh.todoapp.data.model.ToDoData
 import com.bikcodeh.todoapp.databinding.ItemTodoBinding
 
@@ -17,6 +20,17 @@ class ToDoAdapter : ListAdapter<ToDoData, ToDoAdapter.ToDoViewHolder>(ToDoDiffUt
             with(binding) {
                 todoTitleItem.text = toDoData.title
                 todoDescriptionItem.text = toDoData.description
+                val color = when (toDoData.priority) {
+                    Priority.HIGH -> R.color.red
+                    Priority.MEDIUM -> R.color.yellow
+                    Priority.LOW -> R.color.green
+                }
+                priorityIndicator.setCardBackgroundColor(
+                    ContextCompat.getColor(
+                        binding.root.context,
+                        color
+                    )
+                )
             }
         }
     }

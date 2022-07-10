@@ -10,6 +10,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bikcodeh.todoapp.R
 import com.bikcodeh.todoapp.databinding.FragmentNotesBinding
 import com.bikcodeh.todoapp.ui.adapter.ToDoAdapter
@@ -60,7 +62,7 @@ class NotesFragment : Fragment() {
 
     private fun setUpViews() {
         binding.notesRecyclerView.apply {
-            layoutManager = GridLayoutManager(context, 2)
+            layoutManager = StaggeredGridLayoutManager(2, 1)
             adapter = todoAdapter
         }
     }
