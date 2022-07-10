@@ -60,6 +60,17 @@ class UpdateFragment : Fragment() {
                         )
                         true
                     }
+                    R.id.menu_delete -> {
+                        deleteNote(
+                            ToDoData(
+                                id = args.toDoItem.id,
+                                title = args.toDoItem.title,
+                                description = args.toDoItem.description,
+                                priority = args.toDoItem.priority
+                            )
+                        )
+                        true
+                    }
                     else -> false
                 }
             }
@@ -108,6 +119,10 @@ class UpdateFragment : Fragment() {
                             requireView().snack(getString(R.string.updated_success))
                             findNavController().popBackStack()
                         }
+                        ToDoViewModel.UpdateNoteUiEvent.SuccessDelete -> {
+                            requireView().snack(getString(R.string.delete_success))
+                            findNavController().popBackStack()
+                        }
                     }
                 }
             }
@@ -142,6 +157,10 @@ class UpdateFragment : Fragment() {
                 title, description
             )
         )
+    }
+
+    private fun deleteNote(todoData: ToDoData) {
+        toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.DeleteNote(todoData))
     }
 
     private fun setData() {

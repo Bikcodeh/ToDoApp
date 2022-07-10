@@ -41,6 +41,7 @@ class ToDoViewModel @Inject constructor(
             is ToDoUiEvent.InsertNote -> insertNote(event.toDoData)
             is ToDoUiEvent.ValidateForm -> validateForm(event.title, event.description)
             is ToDoUiEvent.UpdateNote -> updateNote(event.toDoData)
+            is ToDoUiEvent.DeleteNote -> deleteNote(event.toDoData)
         }
     }
 
@@ -96,6 +97,13 @@ class ToDoViewModel @Inject constructor(
         }
     }
 
+    private fun deleteNote(toDoData: ToDoData) {
+        viewModelScope.launch(Dispatchers.IO) {
+            toDoRepository.deleteNote(toDoData)
+            _updateNoteUiEvent.value = UpdateNoteUiEvent.SuccessDelete
+        }
+    }
+
     init {
         getAllNotes()
     }
@@ -108,6 +116,7 @@ class ToDoViewModel @Inject constructor(
 
     sealed class UpdateNoteUiEvent {
         object Success : UpdateNoteUiEvent()
+        object SuccessDelete : UpdateNoteUiEvent()
         object Idle : UpdateNoteUiEvent()
     }
 
@@ -119,6 +128,7 @@ class ToDoViewModel @Inject constructor(
         object GetAllNotes : ToDoUiEvent()
         data class InsertNote(val toDoData: ToDoData) : ToDoUiEvent()
         data class UpdateNote(val toDoData: ToDoData) : ToDoUiEvent()
+        data class DeleteNote(val toDoData: ToDoData) : ToDoUiEvent()
         data class ValidateForm(val title: String, val description: String) : ToDoUiEvent()
     }
 }

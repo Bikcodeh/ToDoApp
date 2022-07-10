@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -81,8 +82,10 @@ class NotesFragment : Fragment() {
     private fun initObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-                toDoViewModel.notes.collect {
-                    todoAdapter.submitList(it)
+                toDoViewModel.notes.collect { notes ->
+                    todoAdapter.submitList(notes)
+                    binding.notesRecyclerView.isVisible = notes.isNotEmpty()
+                    binding.noDataGroup.isVisible = notes.isEmpty()
                 }
             }
         }
