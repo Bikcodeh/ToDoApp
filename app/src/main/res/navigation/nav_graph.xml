@@ -45,5 +45,8 @@
             app:destination="@id/notesFragment"
             app:enterAnim="@anim/from_right"
             app:exitAnim="@anim/to_left" />
+        <argument
+            android:name="toDoItem"
+            app:argType="com.bikcodeh.todoapp.data.model.ToDoData" />
     </fragment>
 </navigation>

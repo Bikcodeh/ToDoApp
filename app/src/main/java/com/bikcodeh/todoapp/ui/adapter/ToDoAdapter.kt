@@ -11,7 +11,7 @@ import com.bikcodeh.todoapp.data.model.Priority
 import com.bikcodeh.todoapp.data.model.ToDoData
 import com.bikcodeh.todoapp.databinding.ItemTodoBinding
 
-class ToDoAdapter : ListAdapter<ToDoData, ToDoAdapter.ToDoViewHolder>(ToDoDiffUtil()) {
+class ToDoAdapter(private val onToDoClick: (ToDoData) -> Unit) : ListAdapter<ToDoData, ToDoAdapter.ToDoViewHolder>(ToDoDiffUtil()) {
 
     inner class ToDoViewHolder(private val binding: ItemTodoBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -31,6 +31,9 @@ class ToDoAdapter : ListAdapter<ToDoData, ToDoAdapter.ToDoViewHolder>(ToDoDiffUt
                         color
                     )
                 )
+                this.root.setOnClickListener {
+                    onToDoClick(toDoData)
+                }
             }
         }
     }

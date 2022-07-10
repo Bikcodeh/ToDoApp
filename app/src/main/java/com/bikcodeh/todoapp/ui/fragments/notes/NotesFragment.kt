@@ -26,7 +26,12 @@ class NotesFragment : Fragment() {
     private val binding: FragmentNotesBinding
         get() = _binding!!
 
-    private val todoAdapter: ToDoAdapter by lazy { ToDoAdapter() }
+    private val todoAdapter: ToDoAdapter by lazy {
+        ToDoAdapter {
+            val action = NotesFragmentDirections.actionNotesFragmentToUpdateFragment(it)
+            findNavController().navigate(action)
+        }
+    }
     private val toDoViewModel: ToDoViewModel by viewModels()
 
     override fun onCreateView(

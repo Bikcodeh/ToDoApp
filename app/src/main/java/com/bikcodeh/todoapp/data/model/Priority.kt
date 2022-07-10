@@ -14,3 +14,11 @@ fun parsePriority(priority: String): Priority {
         else -> Priority.LOW
     }
 }
+
+fun Priority.toIndex(): Int {
+    return when (this) {
+        Priority.HIGH -> 0
+        Priority.MEDIUM -> 1
+        Priority.LOW -> 2
+    }
+}

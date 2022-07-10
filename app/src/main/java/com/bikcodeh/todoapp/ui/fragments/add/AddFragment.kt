@@ -45,7 +45,6 @@ class AddFragment : Fragment() {
         menuHost = requireActivity()
 
         val listener: AdapterView.OnItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 when (position) {
                     0 -> { (parent?.getChildAt(0) as TextView).setTextColor(ContextCompat.getColor(requireContext(), R.color.red)) }
@@ -53,9 +52,7 @@ class AddFragment : Fragment() {
                     2 -> { (parent?.getChildAt(0) as TextView).setTextColor(ContextCompat.getColor(requireContext(), R.color.green)) }
                 }
             }
-
             override fun onNothingSelected(p0: AdapterView<*>?) {}
-
         }
 
         binding.prioritySpinner.onItemSelectedListener = listener
@@ -79,6 +76,11 @@ class AddFragment : Fragment() {
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
         setUpObservers()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun setUpObservers() {
@@ -126,6 +128,5 @@ class AddFragment : Fragment() {
                 titleNote, descriptionNote
             )
         )
-
     }
 }
