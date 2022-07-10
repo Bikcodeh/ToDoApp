@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface ToDoRepository {
     fun getAllNotes(): Flow<List<ToDoData>>
     suspend fun insertNote(toDoData: ToDoData)
+    suspend fun updateNote(toDoData: ToDoData)
 }

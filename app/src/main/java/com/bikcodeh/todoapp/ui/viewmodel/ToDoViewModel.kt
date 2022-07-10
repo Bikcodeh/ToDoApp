@@ -30,11 +30,17 @@ class ToDoViewModel @Inject constructor(
     private val _events = Channel<ToDoValidationFormEvent>(Channel.CONFLATED)
     val events: Flow<ToDoValidationFormEvent> = _events.receiveAsFlow()
 
+    private val _updateNoteUiEvent: MutableStateFlow<UpdateNoteUiEvent> =
+        MutableStateFlow(UpdateNoteUiEvent.Idle)
+    val updateNoteUiEvent: StateFlow<UpdateNoteUiEvent>
+        get() = _updateNoteUiEvent
+
     fun onEvent(event: ToDoUiEvent) {
         when (event) {
             ToDoUiEvent.GetAllNotes -> getAllNotes()
             is ToDoUiEvent.InsertNote -> insertNote(event.toDoData)
             is ToDoUiEvent.ValidateForm -> validateForm(event.title, event.description)
+            is ToDoUiEvent.UpdateNote -> updateNote(event.toDoData)
         }
     }
 
@@ -83,6 +89,13 @@ class ToDoViewModel @Inject constructor(
         }.flowOn(Dispatchers.IO).launchIn(viewModelScope)
     }
 
+    private fun updateNote(toDoData: ToDoData) {
+        viewModelScope.launch(Dispatchers.IO) {
+            toDoRepository.updateNote(toDoData)
+            _updateNoteUiEvent.value = UpdateNoteUiEvent.Success
+        }
+    }
+
     init {
         getAllNotes()
     }
@@ -93,6 +106,11 @@ class ToDoViewModel @Inject constructor(
         @IdRes val descriptionError: Int? = null
     )
 
+    sealed class UpdateNoteUiEvent {
+        object Success : UpdateNoteUiEvent()
+        object Idle : UpdateNoteUiEvent()
+    }
+
     sealed class ToDoValidationFormEvent {
         object Success : ToDoValidationFormEvent()
     }
@@ -100,6 +118,7 @@ class ToDoViewModel @Inject constructor(
     sealed class ToDoUiEvent {
         object GetAllNotes : ToDoUiEvent()
         data class InsertNote(val toDoData: ToDoData) : ToDoUiEvent()
+        data class UpdateNote(val toDoData: ToDoData) : ToDoUiEvent()
         data class ValidateForm(val title: String, val description: String) : ToDoUiEvent()
     }
 }

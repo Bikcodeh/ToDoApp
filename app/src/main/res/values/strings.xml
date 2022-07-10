@@ -24,6 +24,7 @@
     <string name="title_required">Title required.</string>
     <string name="description_required">Description required</string>
     <string name="note_added">Note added!</string>
+    <string name="updated_success">Updated successfully!</string>
 
     <string-array name="priorities">
         <item>High Priority</item>

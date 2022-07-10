@@ -1,9 +1,6 @@
 package com.bikcodeh.todoapp.data.local.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.bikcodeh.todoapp.data.model.ToDoData
 import kotlinx.coroutines.flow.Flow
 
@@ -15,4 +12,7 @@ interface ToDoDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNote(toDoData: ToDoData)
+
+    @Update
+    suspend fun updateNote(toDoData: ToDoData)
 }
