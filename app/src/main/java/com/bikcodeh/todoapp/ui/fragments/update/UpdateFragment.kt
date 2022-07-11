@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.*
 import android.widget.AdapterView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.core.view.MenuHost
@@ -160,7 +161,14 @@ class UpdateFragment : Fragment() {
     }
 
     private fun deleteNote(todoData: ToDoData) {
-        toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.DeleteNote(todoData))
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setPositiveButton(getString(R.string.yes_option)) { _, _ ->
+            toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.DeleteNote(todoData))
+        }
+        builder.setNegativeButton(getString(R.string.no_option)) { _, _ -> }
+        builder.setTitle(getString(R.string.delete_note_title, args.toDoItem.title))
+        builder.setMessage(getString(R.string.delete_description))
+        builder.create().show()
     }
 
     private fun setData() {

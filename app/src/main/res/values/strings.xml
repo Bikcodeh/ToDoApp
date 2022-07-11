@@ -1,12 +1,6 @@
 <resources>
     <string name="app_name">ToDoApp</string>
-    <string name="action_settings">Settings</string>
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="add_note">Add note</string>
     <string name="no_data">No data</string>
     <string name="notes_title">Notes</string>
@@ -21,11 +15,15 @@
     <string name="delete_all">Delete all</string>
     <string name="update_note">Update</string>
     <string name="delete_note">Delete</string>
+    <string name="delete_note_title">Delete %1$s?</string>
     <string name="title_required">Title required.</string>
     <string name="description_required">Description required</string>
     <string name="note_added">Note added!</string>
     <string name="updated_success">Updated successfully!</string>
     <string name="delete_success">Delete successfully!</string>
+    <string name="yes_option">Yes</string>
+    <string name="no_option">No</string>
+    <string name="delete_description">Are you sure you want to remove?</string>
 
     <string-array name="priorities">
         <item>High Priority</item>
