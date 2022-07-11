@@ -12,6 +12,7 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bikcodeh.todoapp.R
@@ -112,41 +113,45 @@ class UpdateFragment : Fragment() {
 
     private fun setUpObserver() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-                toDoViewModel.updateNoteUiEvent.collect {
-                    when (it) {
-                        ToDoViewModel.UpdateNoteUiEvent.Idle -> {}
-                        ToDoViewModel.UpdateNoteUiEvent.Success -> {
-                            requireView().snack(getString(R.string.updated_success))
-                            findNavController().popBackStack()
-                        }
-                        ToDoViewModel.UpdateNoteUiEvent.SuccessDelete -> {
-                            requireView().snack(getString(R.string.delete_success))
-                            findNavController().popBackStack()
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
+
+                launch {
+                    toDoViewModel.updateNoteUiEvent.collect {
+                        when (it) {
+                            ToDoViewModel.UpdateNoteUiEvent.Idle -> {}
+                            ToDoViewModel.UpdateNoteUiEvent.Success -> {
+                                requireView().snack(getString(R.string.updated_success))
+                                findNavController().popBackStack()
+                            }
+                            ToDoViewModel.UpdateNoteUiEvent.SuccessDelete -> {
+                                requireView().snack(getString(R.string.delete_success))
+                                findNavController().popBackStack()
+                            }
                         }
                     }
                 }
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            toDoViewModel.formState.collect { formState ->
-                if (formState.isFormValid) {
-                    toDoViewModel.onEvent(
-                        ToDoViewModel.ToDoUiEvent.UpdateNote(
-                            ToDoData(
-                                id = args.toDoItem.id,
-                                title = binding.titleNote.text.toString(),
-                                priority = parsePriority(binding.prioritySpinner.selectedItem.toString()),
-                                description = binding.descriptionNote.text.toString()
+
+                launch {
+                    toDoViewModel.formState.collect { formState ->
+                        if (formState.isFormValid) {
+                            toDoViewModel.onEvent(
+                                ToDoViewModel.ToDoUiEvent.UpdateNote(
+                                    ToDoData(
+                                        id = args.toDoItem.id,
+                                        title = binding.titleNote.text.toString(),
+                                        priority = parsePriority(binding.prioritySpinner.selectedItem.toString()),
+                                        description = binding.descriptionNote.text.toString()
+                                    )
+                                )
                             )
-                        )
-                    )
-                }
-                formState.titleError?.let { error ->
-                    binding.titleNote.error = getString(error)
-                }
-                formState.descriptionError?.let { error ->
-                    binding.descriptionNote.error = getString(error)
+                        }
+                        formState.titleError?.let { error ->
+                            binding.titleNote.error = getString(error)
+                        }
+                        formState.descriptionError?.let { error ->
+                            binding.descriptionNote.error = getString(error)
+                        }
+                    }
                 }
             }
         }

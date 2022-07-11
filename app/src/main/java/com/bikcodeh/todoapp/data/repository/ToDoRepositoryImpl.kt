@@ -24,4 +24,8 @@ class ToDoRepositoryImpl @Inject constructor(
     override suspend fun deleteNote(toDoData: ToDoData) {
         toDoDao.deleteNote(toDoData)
     }
+
+    override suspend fun deleteAll() {
+        toDoDao.deleteAll()
+    }
 }

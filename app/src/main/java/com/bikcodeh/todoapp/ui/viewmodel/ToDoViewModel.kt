@@ -35,6 +35,11 @@ class ToDoViewModel @Inject constructor(
     val updateNoteUiEvent: StateFlow<UpdateNoteUiEvent>
         get() = _updateNoteUiEvent
 
+    private val _deleteAllNotesEvent: MutableStateFlow<DeleteAllUiEvent> =
+        MutableStateFlow(DeleteAllUiEvent.Idle)
+    val deleteAllNotesEvent: StateFlow<DeleteAllUiEvent>
+        get() = _deleteAllNotesEvent
+
     fun onEvent(event: ToDoUiEvent) {
         when (event) {
             ToDoUiEvent.GetAllNotes -> getAllNotes()
@@ -42,6 +47,7 @@ class ToDoViewModel @Inject constructor(
             is ToDoUiEvent.ValidateForm -> validateForm(event.title, event.description)
             is ToDoUiEvent.UpdateNote -> updateNote(event.toDoData)
             is ToDoUiEvent.DeleteNote -> deleteNote(event.toDoData)
+            ToDoUiEvent.DeleteAllNotes -> deleteAllNotes()
         }
     }
 
@@ -104,6 +110,13 @@ class ToDoViewModel @Inject constructor(
         }
     }
 
+    private fun deleteAllNotes() {
+        viewModelScope.launch(Dispatchers.IO) {
+            toDoRepository.deleteAll()
+            _deleteAllNotesEvent.value = DeleteAllUiEvent.Success
+        }
+    }
+
     init {
         getAllNotes()
     }
@@ -120,6 +133,11 @@ class ToDoViewModel @Inject constructor(
         object Idle : UpdateNoteUiEvent()
     }
 
+    sealed class DeleteAllUiEvent {
+        object Idle : DeleteAllUiEvent()
+        object Success : DeleteAllUiEvent()
+    }
+
     sealed class ToDoValidationFormEvent {
         object Success : ToDoValidationFormEvent()
     }
@@ -130,5 +148,6 @@ class ToDoViewModel @Inject constructor(
         data class UpdateNote(val toDoData: ToDoData) : ToDoUiEvent()
         data class DeleteNote(val toDoData: ToDoData) : ToDoUiEvent()
         data class ValidateForm(val title: String, val description: String) : ToDoUiEvent()
+        object DeleteAllNotes : ToDoUiEvent()
     }
 }

@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bikcodeh.todoapp.R
 import com.bikcodeh.todoapp.databinding.FragmentNotesBinding
 import com.bikcodeh.todoapp.ui.adapter.ToDoAdapter
+import com.bikcodeh.todoapp.ui.util.snack
 import com.bikcodeh.todoapp.ui.viewmodel.ToDoViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -53,7 +55,13 @@ class NotesFragment : Fragment() {
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return true
+                return when (menuItem.itemId) {
+                    R.id.menu_delete_all -> {
+                        toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.DeleteAllNotes)
+                        true
+                    }
+                    else -> false
+                }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
         setUpViews()
@@ -81,11 +89,27 @@ class NotesFragment : Fragment() {
 
     private fun initObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-                toDoViewModel.notes.collect { notes ->
-                    todoAdapter.submitList(notes)
-                    binding.notesRecyclerView.isVisible = notes.isNotEmpty()
-                    binding.noDataGroup.isVisible = notes.isEmpty()
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
+
+                launch {
+                    toDoViewModel.notes.collect { notes ->
+                        todoAdapter.submitList(notes)
+                        binding.notesRecyclerView.isVisible = notes.isNotEmpty()
+                        binding.noDataGroup.isVisible = notes.isEmpty()
+                    }
+                }
+
+                launch {
+                    toDoViewModel.deleteAllNotesEvent.collect {
+                        when (it) {
+                            ToDoViewModel.DeleteAllUiEvent.Idle -> {}
+                            ToDoViewModel.DeleteAllUiEvent.Success -> requireView().snack(
+                                getString(
+                                    R.string.deleted_all
+                                )
+                            )
+                        }
+                    }
                 }
             }
         }
