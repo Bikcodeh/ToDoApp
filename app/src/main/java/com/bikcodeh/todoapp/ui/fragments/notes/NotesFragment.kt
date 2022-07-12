@@ -44,6 +44,8 @@ class NotesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentNotesBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = this
+        binding.toDoViewModel = toDoViewModel
         return binding.root
     }
 
@@ -54,6 +56,7 @@ class NotesFragment : Fragment() {
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.list_fragment_menu, menu)
+
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -67,7 +70,6 @@ class NotesFragment : Fragment() {
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
         setUpViews()
-        setUpListeners()
         setCollectors()
     }
 
@@ -83,19 +85,11 @@ class NotesFragment : Fragment() {
         }
     }
 
-    private fun setUpListeners() {
-        binding.addNoteFab.setOnClickListener {
-            findNavController().navigate(R.id.action_notesFragment_to_addFragment)
-        }
-    }
-
     private fun setCollectors() {
         observeFlows { scope ->
             scope.launch {
                 toDoViewModel.notes.collect { notes ->
                     todoAdapter.submitList(notes)
-                    binding.notesRecyclerView.isVisible = notes.isNotEmpty()
-                    binding.noDataGroup.isVisible = notes.isEmpty()
                 }
             }
 

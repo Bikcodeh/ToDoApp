@@ -138,9 +138,10 @@ class AddFragment : Fragment() {
             }
 
             scope.launch {
-                toDoViewModel.events.collect {
+                toDoViewModel.addNoteEvent.collect {
                     when (it) {
-                        ToDoViewModel.ToDoValidationFormEvent.Success -> {
+                        ToDoViewModel.AddNoteUiEvent.Idle -> {}
+                        ToDoViewModel.AddNoteUiEvent.Success -> {
                             Toast.makeText(
                                 requireContext(),
                                 getString(R.string.note_added),
