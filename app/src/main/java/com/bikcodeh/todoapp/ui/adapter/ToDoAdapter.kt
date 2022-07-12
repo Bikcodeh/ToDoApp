@@ -18,19 +18,8 @@ class ToDoAdapter(private val onToDoClick: (ToDoData) -> Unit) : ListAdapter<ToD
 
         fun bind(toDoData: ToDoData) {
             with(binding) {
-                todoTitleItem.text = toDoData.title
-                todoDescriptionItem.text = toDoData.description
-                val color = when (toDoData.priority) {
-                    Priority.HIGH -> R.color.red
-                    Priority.MEDIUM -> R.color.yellow
-                    Priority.LOW -> R.color.green
-                }
-                priorityIndicator.setCardBackgroundColor(
-                    ContextCompat.getColor(
-                        binding.root.context,
-                        color
-                    )
-                )
+                this.toDoData = toDoData
+                this.executePendingBindings()
                 this.root.setOnClickListener {
                     onToDoClick(toDoData)
                 }
