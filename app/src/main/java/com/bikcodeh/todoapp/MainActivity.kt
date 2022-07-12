@@ -25,10 +25,6 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
         navController = navHostFragment.navController
         setupActionBarWithNavController(navController)
-
-        binding.root.setOnClickListener {
-            navController.navigate(R.id.action_notesFragment_to_updateFragment)
-        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

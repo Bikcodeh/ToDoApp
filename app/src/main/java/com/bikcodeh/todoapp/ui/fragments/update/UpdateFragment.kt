@@ -20,6 +20,7 @@ import com.bikcodeh.todoapp.data.model.ToDoData
 import com.bikcodeh.todoapp.data.model.parsePriority
 import com.bikcodeh.todoapp.data.model.toIndex
 import com.bikcodeh.todoapp.databinding.FragmentUpdateBinding
+import com.bikcodeh.todoapp.ui.util.observeFlows
 import com.bikcodeh.todoapp.ui.util.snack
 import com.bikcodeh.todoapp.ui.viewmodel.ToDoViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -112,45 +113,43 @@ class UpdateFragment : Fragment() {
     }
 
     private fun setUpObserver() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
 
-                launch {
-                    toDoViewModel.updateNoteUiEvent.collect {
-                        when (it) {
-                            ToDoViewModel.UpdateNoteUiEvent.Idle -> {}
-                            ToDoViewModel.UpdateNoteUiEvent.Success -> {
-                                requireView().snack(getString(R.string.updated_success))
-                                findNavController().popBackStack()
-                            }
-                            ToDoViewModel.UpdateNoteUiEvent.SuccessDelete -> {
-                                requireView().snack(getString(R.string.delete_success))
-                                findNavController().popBackStack()
-                            }
+        observeFlows { scope ->
+            scope.launch {
+                toDoViewModel.updateNoteUiEvent.collect {
+                    when (it) {
+                        ToDoViewModel.UpdateNoteUiEvent.Idle -> {}
+                        ToDoViewModel.UpdateNoteUiEvent.Success -> {
+                            requireView().snack(getString(R.string.updated_success))
+                            findNavController().popBackStack()
+                        }
+                        ToDoViewModel.UpdateNoteUiEvent.SuccessDelete -> {
+                            requireView().snack(getString(R.string.delete_success))
+                            findNavController().popBackStack()
                         }
                     }
                 }
+            }
 
-                launch {
-                    toDoViewModel.formState.collect { formState ->
-                        if (formState.isFormValid) {
-                            toDoViewModel.onEvent(
-                                ToDoViewModel.ToDoUiEvent.UpdateNote(
-                                    ToDoData(
-                                        id = args.toDoItem.id,
-                                        title = binding.titleNote.text.toString(),
-                                        priority = parsePriority(binding.prioritySpinner.selectedItem.toString()),
-                                        description = binding.descriptionNote.text.toString()
-                                    )
+            scope.launch {
+                toDoViewModel.formState.collect { formState ->
+                    if (formState.isFormValid) {
+                        toDoViewModel.onEvent(
+                            ToDoViewModel.ToDoUiEvent.UpdateNote(
+                                ToDoData(
+                                    id = args.toDoItem.id,
+                                    title = binding.titleNote.text.toString(),
+                                    priority = parsePriority(binding.prioritySpinner.selectedItem.toString()),
+                                    description = binding.descriptionNote.text.toString()
                                 )
                             )
-                        }
-                        formState.titleError?.let { error ->
-                            binding.titleNote.error = getString(error)
-                        }
-                        formState.descriptionError?.let { error ->
-                            binding.descriptionNote.error = getString(error)
-                        }
+                        )
+                    }
+                    formState.titleError?.let { error ->
+                        binding.titleNote.error = getString(error)
+                    }
+                    formState.descriptionError?.let { error ->
+                        binding.descriptionNote.error = getString(error)
                     }
                 }
             }

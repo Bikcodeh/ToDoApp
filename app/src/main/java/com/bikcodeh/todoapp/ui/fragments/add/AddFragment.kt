@@ -18,6 +18,7 @@ import com.bikcodeh.todoapp.R
 import com.bikcodeh.todoapp.data.model.ToDoData
 import com.bikcodeh.todoapp.data.model.parsePriority
 import com.bikcodeh.todoapp.databinding.FragmentAddBinding
+import com.bikcodeh.todoapp.ui.util.observeFlows
 import com.bikcodeh.todoapp.ui.viewmodel.ToDoViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -113,41 +114,39 @@ class AddFragment : Fragment() {
     }
 
     private fun setUpObservers() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
-                launch {
-                    toDoViewModel.formState.collect { formState ->
-                        if (formState.isFormValid) {
-                            toDoViewModel.onEvent(
-                                ToDoViewModel.ToDoUiEvent.InsertNote(
-                                    ToDoData(
-                                        title = binding.titleNote.text.toString(),
-                                        priority = parsePriority(binding.prioritySpinner.selectedItem.toString()),
-                                        description = binding.descriptionNote.text.toString()
-                                    )
+        observeFlows { scope ->
+            scope.launch {
+                toDoViewModel.formState.collect { formState ->
+                    if (formState.isFormValid) {
+                        toDoViewModel.onEvent(
+                            ToDoViewModel.ToDoUiEvent.InsertNote(
+                                ToDoData(
+                                    title = binding.titleNote.text.toString(),
+                                    priority = parsePriority(binding.prioritySpinner.selectedItem.toString()),
+                                    description = binding.descriptionNote.text.toString()
                                 )
                             )
-                        }
-                        formState.titleError?.let { error ->
-                            binding.titleNote.error = getString(error)
-                        }
-                        formState.descriptionError?.let { error ->
-                            binding.descriptionNote.error = getString(error)
-                        }
+                        )
+                    }
+                    formState.titleError?.let { error ->
+                        binding.titleNote.error = getString(error)
+                    }
+                    formState.descriptionError?.let { error ->
+                        binding.descriptionNote.error = getString(error)
                     }
                 }
+            }
 
-                launch {
-                    toDoViewModel.events.collect {
-                        when (it) {
-                            ToDoViewModel.ToDoValidationFormEvent.Success -> {
-                                Toast.makeText(
-                                    requireContext(),
-                                    getString(R.string.note_added),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                findNavController().popBackStack()
-                            }
+            scope.launch {
+                toDoViewModel.events.collect {
+                    when (it) {
+                        ToDoViewModel.ToDoValidationFormEvent.Success -> {
+                            Toast.makeText(
+                                requireContext(),
+                                getString(R.string.note_added),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            findNavController().popBackStack()
                         }
                     }
                 }

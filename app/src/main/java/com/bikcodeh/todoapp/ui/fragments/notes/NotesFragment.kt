@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bikcodeh.todoapp.R
 import com.bikcodeh.todoapp.databinding.FragmentNotesBinding
 import com.bikcodeh.todoapp.ui.adapter.ToDoAdapter
+import com.bikcodeh.todoapp.ui.util.observeFlows
 import com.bikcodeh.todoapp.ui.util.snack
 import com.bikcodeh.todoapp.ui.viewmodel.ToDoViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -67,7 +68,7 @@ class NotesFragment : Fragment() {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
         setUpViews()
         setUpListeners()
-        initObservers()
+        setCollectors()
     }
 
     override fun onDestroyView() {
@@ -88,28 +89,25 @@ class NotesFragment : Fragment() {
         }
     }
 
-    private fun initObservers() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
-
-                launch {
-                    toDoViewModel.notes.collect { notes ->
-                        todoAdapter.submitList(notes)
-                        binding.notesRecyclerView.isVisible = notes.isNotEmpty()
-                        binding.noDataGroup.isVisible = notes.isEmpty()
-                    }
+    private fun setCollectors() {
+        observeFlows { scope ->
+            scope.launch {
+                toDoViewModel.notes.collect { notes ->
+                    todoAdapter.submitList(notes)
+                    binding.notesRecyclerView.isVisible = notes.isNotEmpty()
+                    binding.noDataGroup.isVisible = notes.isEmpty()
                 }
+            }
 
-                launch {
-                    toDoViewModel.deleteAllNotesEvent.collect {
-                        when (it) {
-                            ToDoViewModel.DeleteAllUiEvent.Idle -> {}
-                            ToDoViewModel.DeleteAllUiEvent.Success -> requireView().snack(
-                                getString(
-                                    R.string.deleted_all
-                                )
+            scope.launch {
+                toDoViewModel.deleteAllNotesEvent.collect {
+                    when (it) {
+                        ToDoViewModel.DeleteAllUiEvent.Idle -> {}
+                        ToDoViewModel.DeleteAllUiEvent.Success -> requireView().snack(
+                            getString(
+                                R.string.deleted_all
                             )
-                        }
+                        )
                     }
                 }
             }
