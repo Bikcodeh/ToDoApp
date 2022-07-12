@@ -2,6 +2,7 @@ package com.bikcodeh.todoapp.ui.fragments.notes
 
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
@@ -57,7 +58,7 @@ class NotesFragment : Fragment() {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.menu_delete_all -> {
-                        toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.DeleteAllNotes)
+                        confirmDeleteAll()
                         true
                     }
                     else -> false
@@ -113,6 +114,17 @@ class NotesFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun confirmDeleteAll() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setPositiveButton(getString(R.string.yes_option)) { _, _ ->
+            toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.DeleteAllNotes)
+        }
+        builder.setNegativeButton(getString(R.string.no_option)) { _, _ -> }
+        builder.setTitle(getString(R.string.delete_all_notes_title))
+        builder.setMessage(getString(R.string.delete_all_description))
+        builder.create().show()
     }
 
 }

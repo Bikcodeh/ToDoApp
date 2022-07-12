@@ -16,6 +16,7 @@
     <string name="update_note">Update</string>
     <string name="delete_note">Delete</string>
     <string name="delete_note_title">Delete %1$s?</string>
+    <string name="delete_all_notes_title">Delete all?</string>
     <string name="title_required">Title required.</string>
     <string name="description_required">Description required</string>
     <string name="note_added">Note added!</string>
@@ -24,6 +25,7 @@
     <string name="yes_option">Yes</string>
     <string name="no_option">No</string>
     <string name="delete_description">Are you sure you want to remove?</string>
+    <string name="delete_all_description">Are you sure you want to delete all?</string>
     <string name="deleted_all">All notes were deleted.</string>
 
     <string-array name="priorities">
