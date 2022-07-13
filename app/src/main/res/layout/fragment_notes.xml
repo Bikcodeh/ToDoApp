@@ -11,6 +11,7 @@
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/cooordinator"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -120,7 +121,6 @@
             android:focusable="true"
             android:navigateToAddFragment="@{true}"
             android:src="@drawable/ic_add"
-            app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

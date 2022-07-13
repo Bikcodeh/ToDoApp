@@ -16,6 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.*
 import com.bikcodeh.todoapp.R
+import com.bikcodeh.todoapp.data.model.ToDoData
 import com.bikcodeh.todoapp.databinding.FragmentNotesBinding
 import com.bikcodeh.todoapp.ui.adapter.ToDoAdapter
 import com.bikcodeh.todoapp.ui.util.observeFlows
@@ -111,12 +112,24 @@ class NotesFragment : Fragment() {
     private fun swipeToDelete(recyclerView: RecyclerView) {
         val swipeToDeleteCallback = object : SwipeToDelete() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val itemToDelete = todoAdapter.currentList[viewHolder.adapterPosition]
-                toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.DeleteNote(itemToDelete))
+                //Delete item
+                val deletedItem = todoAdapter.currentList[viewHolder.adapterPosition]
+                toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.DeleteNote(deletedItem))
+                //Restore deleted item
+                restoreDeletedData(deletedItem, viewHolder.adapterPosition)
             }
         }
         val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
+
+    private fun restoreDeletedData(deletedItem: ToDoData, position: Int) {
+        val snackBar = Snackbar.make(binding.addNoteFab, "Deleted ${deletedItem.title}", Snackbar.LENGTH_SHORT)
+        snackBar.setAction(getString(R.string.undo)) {
+            toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.InsertNote(deletedItem))
+            todoAdapter.notifyItemChanged(position)
+        }
+        snackBar.show()
     }
 
     private fun setCollectors() {
