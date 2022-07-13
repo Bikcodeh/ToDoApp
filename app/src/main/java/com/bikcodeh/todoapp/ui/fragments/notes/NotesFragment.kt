@@ -24,6 +24,7 @@ import com.bikcodeh.todoapp.ui.util.snack
 import com.bikcodeh.todoapp.ui.viewmodel.ToDoViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -104,6 +105,9 @@ class NotesFragment : Fragment() {
         binding.notesRecyclerView.apply {
             layoutManager = StaggeredGridLayoutManager(2, 1)
             adapter = todoAdapter
+            itemAnimator = SlideInUpAnimator().apply {
+                addDuration = 300
+            }
 
             swipeToDelete(this)
         }
