@@ -38,11 +38,6 @@ class ToDoViewModel @Inject constructor(
     val updateNoteUiEvent: StateFlow<UpdateNoteUiEvent>
         get() = _updateNoteUiEvent
 
-    private val _deleteAllNotesEvent: MutableStateFlow<DeleteAllUiEvent> =
-        MutableStateFlow(DeleteAllUiEvent.Idle)
-    val deleteAllNotesEvent: StateFlow<DeleteAllUiEvent>
-        get() = _deleteAllNotesEvent
-
     private val _isEmpty: MutableLiveData<Boolean> = MutableLiveData(true)
     val isEmpty: LiveData<Boolean> get() = _isEmpty
 
@@ -120,7 +115,6 @@ class ToDoViewModel @Inject constructor(
     private fun deleteAllNotes() {
         viewModelScope.launch(Dispatchers.IO) {
             toDoRepository.deleteAll()
-            _deleteAllNotesEvent.value = DeleteAllUiEvent.Success
         }
     }
 
@@ -140,10 +134,7 @@ class ToDoViewModel @Inject constructor(
         object Idle : UpdateNoteUiEvent()
     }
 
-    sealed class DeleteAllUiEvent {
-        object Idle : DeleteAllUiEvent()
-        object Success : DeleteAllUiEvent()
-    }
+    data class DeleteAllUiState(val isCompleted: Boolean = false)
 
     sealed class AddNoteUiEvent {
         object Idle : AddNoteUiEvent()

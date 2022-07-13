@@ -27,6 +27,7 @@
     <string name="delete_description">Are you sure you want to remove?</string>
     <string name="delete_all_description">Are you sure you want to delete all?</string>
     <string name="deleted_all">All notes were deleted.</string>
+    <string name="back">Back</string>
 
     <string-array name="priorities">
         <item>High Priority</item>

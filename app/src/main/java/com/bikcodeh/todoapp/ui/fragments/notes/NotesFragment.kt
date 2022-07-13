@@ -2,6 +2,8 @@ package com.bikcodeh.todoapp.ui.fragments.notes
 
 import android.os.Bundle
 import android.view.*
+import android.widget.PopupMenu
+import androidx.annotation.MenuRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -14,6 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bikcodeh.todoapp.R
 import com.bikcodeh.todoapp.databinding.FragmentNotesBinding
@@ -21,6 +24,7 @@ import com.bikcodeh.todoapp.ui.adapter.ToDoAdapter
 import com.bikcodeh.todoapp.ui.util.observeFlows
 import com.bikcodeh.todoapp.ui.util.snack
 import com.bikcodeh.todoapp.ui.viewmodel.ToDoViewModel
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -30,6 +34,8 @@ class NotesFragment : Fragment() {
     private var _binding: FragmentNotesBinding? = null
     private val binding: FragmentNotesBinding
         get() = _binding!!
+
+    private var isEmpty: Boolean = true
 
     private val todoAdapter: ToDoAdapter by lazy {
         ToDoAdapter {
@@ -51,26 +57,44 @@ class NotesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val menuHost: MenuHost = requireActivity()
-
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.list_fragment_menu, menu)
-
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.menu_delete_all -> {
-                        confirmDeleteAll()
-                        true
-                    }
-                    else -> false
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        binding.notesMenuBtn.setOnClickListener {
+            showMenu(it)
+        }
         setUpViews()
         setCollectors()
+        setListener()
+    }
+
+    private fun setListener() {
+
+        binding.notesRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0) {
+                    binding.addNoteFab.hide();
+                } else if (dy < 0) {
+                    binding.addNoteFab.show()
+                } else {
+                    binding.addNoteFab.show()
+                }
+            }
+        })
+    }
+
+    private fun showMenu(view: View) {
+        val popUp = PopupMenu(requireContext(), view)
+        popUp.menuInflater.inflate(R.menu.list_fragment_menu, popUp.menu)
+
+        popUp.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menu_delete_all -> {
+                    confirmDeleteAll()
+                    true
+                }
+                else -> false
+            }
+        }
+        popUp.show()
     }
 
     override fun onDestroyView() {
@@ -86,23 +110,18 @@ class NotesFragment : Fragment() {
     }
 
     private fun setCollectors() {
+        toDoViewModel.isEmpty.observe(viewLifecycleOwner) {
+            isEmpty = it
+            if (isEmpty) {
+                binding.notesMenuBtn.visibility = View.INVISIBLE
+            } else {
+                binding.notesMenuBtn.visibility = View.VISIBLE
+            }
+        }
         observeFlows { scope ->
             scope.launch {
                 toDoViewModel.notes.collect { notes ->
                     todoAdapter.submitList(notes)
-                }
-            }
-
-            scope.launch {
-                toDoViewModel.deleteAllNotesEvent.collect {
-                    when (it) {
-                        ToDoViewModel.DeleteAllUiEvent.Idle -> {}
-                        ToDoViewModel.DeleteAllUiEvent.Success -> requireView().snack(
-                            getString(
-                                R.string.deleted_all
-                            )
-                        )
-                    }
                 }
             }
         }

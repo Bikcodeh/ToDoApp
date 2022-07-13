@@ -47,43 +47,12 @@ class UpdateFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val menuHost: MenuHost = requireActivity()
-
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.update_fragment_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        updateNote(
-                            binding.titleNote.text.toString(),
-                            binding.descriptionNote.text.toString()
-                        )
-                        true
-                    }
-                    R.id.menu_delete -> {
-                        deleteNote(
-                            ToDoData(
-                                id = args.toDoItem.id,
-                                title = args.toDoItem.title,
-                                description = args.toDoItem.description,
-                                priority = args.toDoItem.priority
-                            )
-                        )
-                        true
-                    }
-                    else -> false
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-        setSpinnerListener()
+        setListeners()
         setData()
         setUpObserver()
     }
 
-    private fun setSpinnerListener() {
+    private fun setListeners() {
         val listener: AdapterView.OnItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
@@ -110,6 +79,25 @@ class UpdateFragment : Fragment() {
                 override fun onNothingSelected(p0: AdapterView<*>?) {}
             }
         binding.prioritySpinner.onItemSelectedListener = listener
+        binding.deleteNoteBtn.setOnClickListener {
+            deleteNote(
+                ToDoData(
+                    id = args.toDoItem.id,
+                    title = args.toDoItem.title,
+                    description = args.toDoItem.description,
+                    priority = args.toDoItem.priority
+                )
+            )
+        }
+        binding.updateNoteBtn.setOnClickListener {
+            updateNote(
+                binding.titleNote.text.toString(),
+                binding.descriptionNote.text.toString()
+            )
+        }
+        binding.updateNoteBackBtn.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun setUpObserver() {
