@@ -14,10 +14,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.recyclerview.widget.*
 import com.bikcodeh.todoapp.R
 import com.bikcodeh.todoapp.databinding.FragmentNotesBinding
 import com.bikcodeh.todoapp.ui.adapter.ToDoAdapter
@@ -106,7 +103,20 @@ class NotesFragment : Fragment() {
         binding.notesRecyclerView.apply {
             layoutManager = StaggeredGridLayoutManager(2, 1)
             adapter = todoAdapter
+
+            swipeToDelete(this)
         }
+    }
+
+    private fun swipeToDelete(recyclerView: RecyclerView) {
+        val swipeToDeleteCallback = object : SwipeToDelete() {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val itemToDelete = todoAdapter.currentList[viewHolder.adapterPosition]
+                toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.DeleteNote(itemToDelete))
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
     private fun setCollectors() {
