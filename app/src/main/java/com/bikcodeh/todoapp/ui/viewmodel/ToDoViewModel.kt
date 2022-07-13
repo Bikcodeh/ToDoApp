@@ -134,8 +134,6 @@ class ToDoViewModel @Inject constructor(
         object Idle : UpdateNoteUiEvent()
     }
 
-    data class DeleteAllUiState(val isCompleted: Boolean = false)
-
     sealed class AddNoteUiEvent {
         object Idle : AddNoteUiEvent()
         object Success : AddNoteUiEvent()
