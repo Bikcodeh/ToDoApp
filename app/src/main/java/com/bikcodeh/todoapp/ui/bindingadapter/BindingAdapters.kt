@@ -1,6 +1,7 @@
 package com.bikcodeh.todoapp.ui.bindingadapter
 
 import android.view.View
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
@@ -49,6 +50,16 @@ class BindingAdapters {
         @JvmStatic
         fun parseAndSetDate(view: TextView, dateInMilliSeconds: Long) {
             view.text = Util.formatDate(dateInMilliSeconds)
+        }
+
+        @BindingAdapter("android:parsePriorityToInt")
+        @JvmStatic
+        fun parsePriorityToInt(spinner: Spinner, priority: Priority) {
+            when (priority) {
+                Priority.HIGH -> spinner.setSelection(0)
+                Priority.MEDIUM -> spinner.setSelection(1)
+                Priority.LOW -> spinner.setSelection(2)
+            }
         }
     }
 }

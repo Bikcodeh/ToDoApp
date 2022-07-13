@@ -47,8 +47,8 @@ class UpdateFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.toDoData = args.toDoItem
         setListeners()
-        setData()
         setUpObserver()
     }
 
@@ -161,14 +161,6 @@ class UpdateFragment : Fragment() {
         builder.setTitle(getString(R.string.delete_note_title, args.toDoItem.title))
         builder.setMessage(getString(R.string.delete_description))
         builder.create().show()
-    }
-
-    private fun setData() {
-        with(binding) {
-            titleNote.setText(args.toDoItem.title)
-            descriptionNote.setText(args.toDoItem.description)
-            prioritySpinner.setSelection(args.toDoItem.priority.toIndex())
-        }
     }
 
     override fun onDestroyView() {

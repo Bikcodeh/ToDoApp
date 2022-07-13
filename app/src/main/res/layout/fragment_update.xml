@@ -1,141 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:padding="16dp"
-    tools:context=".ui.fragments.add.AddFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <data>
+
+        <variable
+            name="toDoData"
+            type="com.bikcodeh.todoapp.data.model.ToDoData" />
+    </data>
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:padding="16dp"
+        tools:context=".ui.fragments.add.AddFragment">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/updateNoteBackBtn"
-            style="@style/Widget.Material3.Button.TonalButton.Icon"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:layout_marginStart="1dp"
-            android:layout_marginTop="1dp"
-            android:contentDescription="@string/back"
-            android:gravity="center"
-            android:insetLeft="0dp"
-            android:insetTop="0dp"
-            android:insetRight="0dp"
-            android:insetBottom="0dp"
-            app:elevation="4dp"
-            app:icon="@drawable/ic_arrow_back"
-            app:iconGravity="textEnd"
-            app:iconSize="24dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/updateNoteTitleTv"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/update_title"
-            android:textAlignment="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="@+id/updateNoteBackBtn"
-            app:layout_constraintEnd_toStartOf="@+id/updateNoteBtn"
-            app:layout_constraintStart_toEndOf="@+id/updateNoteBackBtn"
-            app:layout_constraintTop_toTopOf="@+id/updateNoteBackBtn" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/updateNoteBackBtn"
+                style="@style/Widget.Material3.Button.TonalButton.Icon"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="1dp"
+                android:layout_marginTop="1dp"
+                android:contentDescription="@string/back"
+                android:gravity="center"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:elevation="4dp"
+                app:icon="@drawable/ic_arrow_back"
+                app:iconGravity="textEnd"
+                app:iconSize="24dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/updateNoteBtn"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:layout_marginTop="1dp"
-            android:layout_marginEnd="1dp"
-            android:contentDescription="@string/back"
-            android:gravity="center_horizontal"
-            android:insetLeft="0dp"
-            android:insetTop="0dp"
-            android:insetRight="0dp"
-            android:insetBottom="0dp"
-            app:backgroundTint="@android:color/transparent"
-            app:elevation="4dp"
-            app:icon="@drawable/ic_save"
-            app:iconGravity="textStart"
-            app:iconPadding="-0.5dp"
-            app:iconSize="24dp"
-            app:layout_constraintEnd_toStartOf="@+id/deleteNoteBtn"
-            app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/updateNoteTitleTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/update_title"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/updateNoteBackBtn"
+                app:layout_constraintEnd_toStartOf="@+id/updateNoteBtn"
+                app:layout_constraintStart_toEndOf="@+id/updateNoteBackBtn"
+                app:layout_constraintTop_toTopOf="@+id/updateNoteBackBtn" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/deleteNoteBtn"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:layout_marginTop="1dp"
-            android:layout_marginEnd="1dp"
-            android:contentDescription="@string/back"
-            android:gravity="center_horizontal"
-            android:insetLeft="0dp"
-            android:insetTop="0dp"
-            android:insetRight="0dp"
-            android:insetBottom="0dp"
-            app:backgroundTint="@android:color/transparent"
-            app:elevation="4dp"
-            app:icon="@drawable/ic_delete"
-            app:iconGravity="textStart"
-            app:iconPadding="-0.5dp"
-            app:iconSize="24dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/updateNoteBtn"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginEnd="1dp"
+                android:contentDescription="@string/back"
+                android:gravity="center_horizontal"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:backgroundTint="@android:color/transparent"
+                app:elevation="4dp"
+                app:icon="@drawable/ic_save"
+                app:iconGravity="textStart"
+                app:iconPadding="-0.5dp"
+                app:iconSize="24dp"
+                app:layout_constraintEnd_toStartOf="@+id/deleteNoteBtn"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/titleNote"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/custom_input"
-            android:ems="10"
-            android:hint="@string/title_hint"
-            android:inputType="textPersonName"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/updateNoteBackBtn" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/deleteNoteBtn"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginEnd="1dp"
+                android:contentDescription="@string/back"
+                android:gravity="center_horizontal"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:backgroundTint="@android:color/transparent"
+                app:elevation="4dp"
+                app:icon="@drawable/ic_delete"
+                app:iconGravity="textStart"
+                app:iconPadding="-0.5dp"
+                app:iconSize="24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <Spinner
-            android:id="@+id/prioritySpinner"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/custom_input"
-            android:entries="@array/priorities"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:spinnerMode="dropdown"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/titleNote" />
+            <EditText
+                android:id="@+id/titleNote"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/custom_input"
+                android:ems="10"
+                android:hint="@string/title_hint"
+                android:inputType="textPersonName"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:text="@{toDoData.title}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/updateNoteBackBtn" />
 
-        <EditText
-            android:id="@+id/descriptionNote"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/custom_input"
-            android:ems="10"
-            android:gravity="top"
-            android:hint="@string/description_hint"
-            android:inputType="textMultiLine"
-            android:paddingStart="24dp"
-            android:paddingTop="24dp"
-            android:paddingEnd="24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/prioritySpinner" />
+            <Spinner
+                android:id="@+id/prioritySpinner"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/custom_input"
+                android:entries="@array/priorities"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:parsePriorityToInt="@{toDoData.priority}"
+                android:spinnerMode="dropdown"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/titleNote" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <EditText
+                android:id="@+id/descriptionNote"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/custom_input"
+                android:ems="10"
+                android:gravity="top"
+                android:hint="@string/description_hint"
+                android:inputType="textMultiLine"
+                android:paddingStart="24dp"
+                android:paddingTop="24dp"
+                android:paddingEnd="24dp"
+                android:text="@{toDoData.description}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/prioritySpinner" />
 
-</ScrollView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+</layout>
