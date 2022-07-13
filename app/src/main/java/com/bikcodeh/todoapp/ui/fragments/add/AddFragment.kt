@@ -86,6 +86,7 @@ class AddFragment : Fragment() {
         binding.prioritySpinner.onItemSelectedListener = listener
         setUpObservers()
         setListeners()
+        binding.constraintLayout.transitionToEnd()
     }
 
     private fun setListeners() {
