@@ -139,6 +139,7 @@ class NotesFragment : Fragment() {
     private fun setCollectors() {
         toDoViewModel.isEmpty.observe(viewLifecycleOwner) {
             isEmpty = it
+            binding.noDataGroup.isVisible = it
             if (isEmpty) {
                 binding.notesMenuBtn.visibility = View.INVISIBLE
             } else {
