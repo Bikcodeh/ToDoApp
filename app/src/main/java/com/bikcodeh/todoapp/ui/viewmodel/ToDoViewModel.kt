@@ -2,6 +2,8 @@ package com.bikcodeh.todoapp.ui.viewmodel
 
 import android.text.TextUtils
 import androidx.annotation.IdRes
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bikcodeh.todoapp.R
@@ -27,18 +29,17 @@ class ToDoViewModel @Inject constructor(
     val formState: StateFlow<FormUiState>
         get() = _formState.asStateFlow()
 
-    private val _events = Channel<ToDoValidationFormEvent>(Channel.CONFLATED)
-    val events: Flow<ToDoValidationFormEvent> = _events.receiveAsFlow()
+    private val _addNoteEvent: MutableStateFlow<AddNoteUiEvent> =
+        MutableStateFlow(AddNoteUiEvent.Idle)
+    val addNoteEvent: StateFlow<AddNoteUiEvent> = _addNoteEvent.asStateFlow()
 
     private val _updateNoteUiEvent: MutableStateFlow<UpdateNoteUiEvent> =
         MutableStateFlow(UpdateNoteUiEvent.Idle)
     val updateNoteUiEvent: StateFlow<UpdateNoteUiEvent>
         get() = _updateNoteUiEvent
 
-    private val _deleteAllNotesEvent: MutableStateFlow<DeleteAllUiEvent> =
-        MutableStateFlow(DeleteAllUiEvent.Idle)
-    val deleteAllNotesEvent: StateFlow<DeleteAllUiEvent>
-        get() = _deleteAllNotesEvent
+    private val _isEmpty: MutableLiveData<Boolean> = MutableLiveData(true)
+    val isEmpty: LiveData<Boolean> get() = _isEmpty
 
     fun onEvent(event: ToDoUiEvent) {
         when (event) {
@@ -86,12 +87,13 @@ class ToDoViewModel @Inject constructor(
     private fun insertNote(toDoData: ToDoData) {
         viewModelScope.launch(Dispatchers.IO) {
             toDoRepository.insertNote(toDoData)
-            _events.send(ToDoValidationFormEvent.Success)
+            _addNoteEvent.value = AddNoteUiEvent.Success
         }
     }
 
     private fun getAllNotes() {
         toDoRepository.getAllNotes().map { notes ->
+            _isEmpty.postValue(notes.isEmpty())
             _notes.value = notes
         }.flowOn(Dispatchers.IO).launchIn(viewModelScope)
     }
@@ -113,7 +115,6 @@ class ToDoViewModel @Inject constructor(
     private fun deleteAllNotes() {
         viewModelScope.launch(Dispatchers.IO) {
             toDoRepository.deleteAll()
-            _deleteAllNotesEvent.value = DeleteAllUiEvent.Success
         }
     }
 
@@ -133,13 +134,9 @@ class ToDoViewModel @Inject constructor(
         object Idle : UpdateNoteUiEvent()
     }
 
-    sealed class DeleteAllUiEvent {
-        object Idle : DeleteAllUiEvent()
-        object Success : DeleteAllUiEvent()
-    }
-
-    sealed class ToDoValidationFormEvent {
-        object Success : ToDoValidationFormEvent()
+    sealed class AddNoteUiEvent {
+        object Idle : AddNoteUiEvent()
+        object Success : AddNoteUiEvent()
     }
 
     sealed class ToDoUiEvent {

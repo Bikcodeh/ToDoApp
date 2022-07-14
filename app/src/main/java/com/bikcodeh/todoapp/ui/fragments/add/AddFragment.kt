@@ -32,8 +32,6 @@ class AddFragment : Fragment() {
 
     private val toDoViewModel: ToDoViewModel by viewModels()
 
-    private lateinit var menuHost: MenuHost
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -44,7 +42,7 @@ class AddFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        menuHost = requireActivity()
+
 
         val listener: AdapterView.OnItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
@@ -86,26 +84,23 @@ class AddFragment : Fragment() {
             }
 
         binding.prioritySpinner.onItemSelectedListener = listener
-
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.add_fragment_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.menu_add -> {
-                        addNote(
-                            binding.titleNote.text.toString(),
-                            binding.descriptionNote.text.toString()
-                        )
-                        true
-                    }
-                    else -> false
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
         setUpObservers()
+        setListeners()
+        binding.constraintLayout.transitionToEnd()
+    }
+
+    private fun setListeners() {
+        with(binding) {
+            addNoteBtn.setOnClickListener {
+                addNote(
+                    binding.titleNote.text.toString(),
+                    binding.descriptionNote.text.toString()
+                )
+            }
+            addNoteBackBtn.setOnClickListener {
+                findNavController().popBackStack()
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -138,14 +133,10 @@ class AddFragment : Fragment() {
             }
 
             scope.launch {
-                toDoViewModel.events.collect {
+                toDoViewModel.addNoteEvent.collect {
                     when (it) {
-                        ToDoViewModel.ToDoValidationFormEvent.Success -> {
-                            Toast.makeText(
-                                requireContext(),
-                                getString(R.string.note_added),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                        ToDoViewModel.AddNoteUiEvent.Idle -> {}
+                        ToDoViewModel.AddNoteUiEvent.Success -> {
                             findNavController().popBackStack()
                         }
                     }
