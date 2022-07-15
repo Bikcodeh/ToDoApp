@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 
 inline fun Fragment.observeFlows(crossinline observationFunction: suspend (CoroutineScope) -> Unit) {
     viewLifecycleOwner.lifecycle.coroutineScope.launch {
-        viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
             observationFunction(this)
         }
     }

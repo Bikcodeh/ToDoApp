@@ -123,12 +123,14 @@ class AddFragment : Fragment() {
                             )
                         )
                     }
-                    formState.titleError?.let { error ->
-                        binding.titleNote.error = getString(error)
+                    val errorTitle = formState.titleError?.let { error ->
+                        getString(error)
                     }
-                    formState.descriptionError?.let { error ->
-                        binding.descriptionNote.error = getString(error)
+                    val errorDescription = formState.descriptionError?.let { error ->
+                        getString(error)
                     }
+                    binding.descriptionNote.error = errorDescription
+                    binding.titleNote.error = errorTitle
                 }
             }
 
