@@ -1,18 +1,18 @@
 package com.bikcodeh.todoapp.ui.fragments.notes
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.*
+import android.view.View.OnTouchListener
 import android.widget.PopupMenu
-import androidx.annotation.MenuRes
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.*
 import com.bikcodeh.todoapp.R
@@ -20,12 +20,12 @@ import com.bikcodeh.todoapp.data.model.ToDoData
 import com.bikcodeh.todoapp.databinding.FragmentNotesBinding
 import com.bikcodeh.todoapp.ui.adapter.ToDoAdapter
 import com.bikcodeh.todoapp.ui.util.observeFlows
-import com.bikcodeh.todoapp.ui.util.snack
 import com.bikcodeh.todoapp.ui.viewmodel.ToDoViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.coroutines.launch
+
 
 @AndroidEntryPoint
 class NotesFragment : Fragment() {
@@ -59,9 +59,9 @@ class NotesFragment : Fragment() {
         binding.notesMenuBtn.setOnClickListener {
             showMenu(it)
         }
+        setListener()
         setUpViews()
         setCollectors()
-        setListener()
     }
 
     private fun setListener() {
@@ -74,10 +74,47 @@ class NotesFragment : Fragment() {
                 } else if (dy < 0) {
                     binding.addNoteFab.show()
                 } else {
+                    binding.addNoteFab.isVisible = binding.searchNote.text.toString().isEmpty()
+                }
+
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     binding.addNoteFab.show()
                 }
             }
         })
+
+        binding.searchNote.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                binding.clearTextIvBtn.isVisible = text.toString().isNotEmpty()
+                if (text.toString().isNotEmpty()) {
+                    binding.addNoteFab.hide()
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        toDoViewModel.searchNotes(text.toString()).collect {
+                            todoAdapter.submitList(it)
+                            binding.noDataGroup.isVisible = it.isEmpty()
+                        }
+                    }
+                } else {
+                    binding.addNoteFab.show()
+                    binding.noDataGroup.isVisible = toDoViewModel.notes.value.isEmpty()
+                    todoAdapter.submitList(toDoViewModel.notes.value)
+                }
+            }
+
+            override fun afterTextChanged(text: Editable?) {
+
+            }
+        })
+
+        binding.clearTextIvBtn.setOnClickListener {
+            binding.searchNote.text = null
+        }
     }
 
     private fun showMenu(view: View) {
@@ -128,7 +165,8 @@ class NotesFragment : Fragment() {
     }
 
     private fun restoreDeletedData(deletedItem: ToDoData, position: Int) {
-        val snackBar = Snackbar.make(binding.addNoteFab, "Deleted ${deletedItem.title}", Snackbar.LENGTH_SHORT)
+        val snackBar =
+            Snackbar.make(binding.addNoteFab, "Deleted ${deletedItem.title}", Snackbar.LENGTH_SHORT)
         snackBar.setAction(getString(R.string.undo)) {
             toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.InsertNote(deletedItem))
             todoAdapter.notifyItemChanged(position)

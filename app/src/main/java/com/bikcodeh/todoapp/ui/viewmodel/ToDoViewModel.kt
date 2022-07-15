@@ -118,6 +118,8 @@ class ToDoViewModel @Inject constructor(
         }
     }
 
+    fun searchNotes(query: String) = toDoRepository.searchNotes(query)
+
     init {
         getAllNotes()
     }

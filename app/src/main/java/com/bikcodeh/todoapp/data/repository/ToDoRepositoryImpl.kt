@@ -28,4 +28,8 @@ class ToDoRepositoryImpl @Inject constructor(
     override suspend fun deleteAll() {
         toDoDao.deleteAll()
     }
+
+    override fun searchNotes(query: String): Flow<List<ToDoData>> {
+        return toDoDao.searchNotes("%$query%")
+    }
 }
