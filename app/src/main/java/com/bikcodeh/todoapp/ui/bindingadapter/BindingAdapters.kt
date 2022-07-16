@@ -3,11 +3,9 @@ package com.bikcodeh.todoapp.ui.bindingadapter
 import android.view.View
 import android.widget.Spinner
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.findNavController
 import com.bikcodeh.todoapp.R
 import com.bikcodeh.todoapp.data.model.Priority

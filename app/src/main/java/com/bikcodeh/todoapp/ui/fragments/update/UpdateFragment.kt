@@ -1,29 +1,24 @@
 package com.bikcodeh.todoapp.ui.fragments.update
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bikcodeh.todoapp.R
 import com.bikcodeh.todoapp.data.model.ToDoData
 import com.bikcodeh.todoapp.data.model.parsePriority
-import com.bikcodeh.todoapp.data.model.toIndex
 import com.bikcodeh.todoapp.databinding.FragmentUpdateBinding
 import com.bikcodeh.todoapp.ui.util.observeFlows
 import com.bikcodeh.todoapp.ui.util.snack
 import com.bikcodeh.todoapp.ui.viewmodel.ToDoViewModel
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
