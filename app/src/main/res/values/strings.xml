@@ -29,6 +29,7 @@
     <string name="deleted_all">All notes were deleted.</string>
     <string name="back">Back</string>
     <string name="undo">Undo</string>
+    <string name="priority_none">None</string>
 
     <string-array name="priorities">
         <item>High Priority</item>

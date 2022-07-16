@@ -21,6 +21,8 @@ class ToDoViewModel @Inject constructor(
     private val toDoRepository: ToDoRepository
 ) : ViewModel() {
 
+    private var _helperNotes: MutableList<ToDoData>? = null
+
     private val _notes: MutableStateFlow<List<ToDoData>> = MutableStateFlow(emptyList())
     val notes: StateFlow<List<ToDoData>>
         get() = _notes.asStateFlow()
@@ -49,7 +51,38 @@ class ToDoViewModel @Inject constructor(
             is ToDoUiEvent.UpdateNote -> updateNote(event.toDoData)
             is ToDoUiEvent.DeleteNote -> deleteNote(event.toDoData)
             ToDoUiEvent.DeleteAllNotes -> deleteAllNotes()
+            is ToDoUiEvent.FilterNotes -> filterNotes(event.query)
+            ToDoUiEvent.OnFilterClear -> {
+                _helperNotes?.let {
+                    _notes.value = it
+                }
+
+            }
+            ToDoUiEvent.SortByHighPriority -> sortByHighPriority()
+            ToDoUiEvent.SortByLowPriority -> sortByLowPriority()
+            ToDoUiEvent.SortByNonePriority -> {
+                sortByNonePriority()
+            }
         }
+    }
+
+    private fun sortByNonePriority() {
+        _notes.update { currentNotes -> currentNotes.sortedBy { it.id } }
+        _helperNotes = _helperNotes?.sortedBy { it.id }?.toMutableList()
+    }
+
+    private fun sortByLowPriority() {
+        _notes.update { currentNotes -> currentNotes.sortedByDescending { it.priority.ordinal } }
+        _helperNotes = _helperNotes?.sortedByDescending { it.priority.ordinal }?.toMutableList()
+    }
+
+    private fun sortByHighPriority() {
+        _notes.update { currentNotes -> currentNotes.sortedBy { it.priority.ordinal } }
+        _helperNotes = _helperNotes?.sortedBy { it.priority.ordinal }?.toMutableList()
+    }
+
+    private fun filterNotes(query: String) {
+        _notes.update { currentNotes -> currentNotes.filter { it.title.contains(query) } }
     }
 
     private fun validateForm(title: String, description: String) {
@@ -95,6 +128,9 @@ class ToDoViewModel @Inject constructor(
         toDoRepository.getAllNotes().map { notes ->
             _isEmpty.postValue(notes.isEmpty())
             _notes.value = notes
+            _helperNotes = mutableListOf<ToDoData>().apply {
+                addAll(notes)
+            }
         }.flowOn(Dispatchers.IO).launchIn(viewModelScope)
     }
 
@@ -117,8 +153,6 @@ class ToDoViewModel @Inject constructor(
             toDoRepository.deleteAll()
         }
     }
-
-    fun searchNotes(query: String) = toDoRepository.searchNotes(query)
 
     init {
         getAllNotes()
@@ -147,6 +181,11 @@ class ToDoViewModel @Inject constructor(
         data class UpdateNote(val toDoData: ToDoData) : ToDoUiEvent()
         data class DeleteNote(val toDoData: ToDoData) : ToDoUiEvent()
         data class ValidateForm(val title: String, val description: String) : ToDoUiEvent()
+        data class FilterNotes(val query: String) : ToDoUiEvent()
+        object OnFilterClear : ToDoUiEvent()
+        object SortByHighPriority : ToDoUiEvent()
+        object SortByLowPriority : ToDoUiEvent()
+        object SortByNonePriority : ToDoUiEvent()
         object DeleteAllNotes : ToDoUiEvent()
     }
 }

@@ -94,26 +94,24 @@ class NotesFragment : Fragment() {
                 binding.clearTextIvBtn.isVisible = text.toString().isNotEmpty()
                 if (text.toString().isNotEmpty()) {
                     binding.addNoteFab.hide()
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        toDoViewModel.searchNotes(text.toString()).collect {
-                            todoAdapter.submitList(it)
-                            binding.noDataGroup.isVisible = it.isEmpty()
-                        }
-                    }
+                    toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.FilterNotes(text.toString()))
                 } else {
                     binding.addNoteFab.show()
                     binding.noDataGroup.isVisible = toDoViewModel.notes.value.isEmpty()
-                    todoAdapter.submitList(toDoViewModel.notes.value)
+                    toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.OnFilterClear)
                 }
             }
 
             override fun afterTextChanged(text: Editable?) {
-
+                if (text.toString().isEmpty()) {
+                    toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.OnFilterClear)
+                }
             }
         })
 
         binding.clearTextIvBtn.setOnClickListener {
             binding.searchNote.text = null
+            toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.OnFilterClear)
         }
     }
 
@@ -125,6 +123,18 @@ class NotesFragment : Fragment() {
             when (menuItem.itemId) {
                 R.id.menu_delete_all -> {
                     confirmDeleteAll()
+                    true
+                }
+                R.id.menu_priority_high -> {
+                    toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.SortByHighPriority)
+                    true
+                }
+                R.id.menu_priority_low -> {
+                    toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.SortByLowPriority)
+                    true
+                }
+                R.id.menu_priority_none -> {
+                    toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.SortByNonePriority)
                     true
                 }
                 else -> false
@@ -145,8 +155,7 @@ class NotesFragment : Fragment() {
             itemAnimator = SlideInUpAnimator().apply {
                 addDuration = 300
             }
-
-            swipeToDelete(this)
+            //swipeToDelete(this)
         }
     }
 
@@ -187,6 +196,8 @@ class NotesFragment : Fragment() {
         observeFlows { scope ->
             scope.launch {
                 toDoViewModel.notes.collect { notes ->
+                    binding.notesRecyclerView.isVisible = notes.isNotEmpty()
+                    binding.noDataGroup.isVisible = notes.isEmpty()
                     todoAdapter.submitList(notes)
                 }
             }

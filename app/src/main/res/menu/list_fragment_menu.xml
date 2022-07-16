@@ -8,6 +8,9 @@
             android:title="@string/sort_by">
             <menu>
                 <item
+                    android:id="@+id/menu_priority_none"
+                    android:title="@string/priority_none" />
+                <item
                     android:id="@+id/menu_priority_high"
                     android:title="@string/priority_high" />
 

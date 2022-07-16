@@ -9,5 +9,4 @@ interface ToDoRepository {
     suspend fun updateNote(toDoData: ToDoData)
     suspend fun deleteNote(toDoData: ToDoData)
     suspend fun deleteAll()
-    fun searchNotes(query: String): Flow<List<ToDoData>>
 }
