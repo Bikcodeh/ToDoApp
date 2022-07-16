@@ -91,11 +91,13 @@ class ToDoViewModel @Inject constructor(
 
     private fun filterNotes(query: String) {
         saveBackup(_notes.value)
-        _notes.update { currentNotes ->
-            currentNotes.filter {
-                it.title.contains(query) || it.description.contains(
-                    query
-                )
+        _helperNotes?.let {
+            _notes.update { notes ->
+                it.filter {
+                    it.title.contains(query) || it.description.contains(
+                        query
+                    )
+                }
             }
         }
     }
