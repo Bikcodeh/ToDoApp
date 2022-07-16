@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bikcodeh.todoapp.R
+import com.bikcodeh.todoapp.data.model.Priority
 import com.bikcodeh.todoapp.data.model.ToDoData
 import com.bikcodeh.todoapp.domain.repository.ToDoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -43,6 +44,7 @@ class ToDoViewModel @Inject constructor(
     private val _isEmpty: MutableLiveData<Boolean> = MutableLiveData(true)
     val isEmpty: LiveData<Boolean> get() = _isEmpty
 
+
     fun onEvent(event: ToDoUiEvent) {
         when (event) {
             ToDoUiEvent.GetAllNotes -> getAllNotes()
@@ -56,33 +58,46 @@ class ToDoViewModel @Inject constructor(
                 _helperNotes?.let {
                     _notes.value = it
                 }
-
+                _helperNotes = null
             }
-            ToDoUiEvent.SortByHighPriority -> sortByHighPriority()
-            ToDoUiEvent.SortByLowPriority -> sortByLowPriority()
-            ToDoUiEvent.SortByNonePriority -> {
-                sortByNonePriority()
+            is ToDoUiEvent.SortNotes -> sortNotes(event.priority)
+        }
+    }
+
+    private fun saveBackup(notes: List<ToDoData>) {
+        if (_helperNotes == null) {
+            _helperNotes = mutableListOf<ToDoData>().apply {
+                addAll(notes)
             }
         }
     }
 
-    private fun sortByNonePriority() {
-        _notes.update { currentNotes -> currentNotes.sortedBy { it.id } }
-        _helperNotes = _helperNotes?.sortedBy { it.id }?.toMutableList()
+    private fun sortNotes(priority: Priority) {
+        saveSort(priority)
+        when (priority) {
+            Priority.HIGH -> {
+                _notes.update { currentNotes -> currentNotes.sortedBy { it.priority.ordinal } }
+            }
+            Priority.LOW -> _notes.update { currentNotes -> currentNotes.sortedByDescending { it.priority.ordinal } }
+            else -> _notes.update { currentNotes -> currentNotes.sortedByDescending { it.id } }
+        }
     }
 
-    private fun sortByLowPriority() {
-        _notes.update { currentNotes -> currentNotes.sortedByDescending { it.priority.ordinal } }
-        _helperNotes = _helperNotes?.sortedByDescending { it.priority.ordinal }?.toMutableList()
-    }
-
-    private fun sortByHighPriority() {
-        _notes.update { currentNotes -> currentNotes.sortedBy { it.priority.ordinal } }
-        _helperNotes = _helperNotes?.sortedBy { it.priority.ordinal }?.toMutableList()
+    private fun saveSort(priority: Priority) {
+        viewModelScope.launch(Dispatchers.IO) {
+            toDoRepository.saveSort(priority.name)
+        }
     }
 
     private fun filterNotes(query: String) {
-        _notes.update { currentNotes -> currentNotes.filter { it.title.contains(query) } }
+        saveBackup(_notes.value)
+        _notes.update { currentNotes ->
+            currentNotes.filter {
+                it.title.contains(query) || it.description.contains(
+                    query
+                )
+            }
+        }
     }
 
     private fun validateForm(title: String, description: String) {
@@ -125,11 +140,15 @@ class ToDoViewModel @Inject constructor(
     }
 
     private fun getAllNotes() {
-        toDoRepository.getAllNotes().map { notes ->
+        toDoRepository.getSavedSort().combine(
+            toDoRepository.getAllNotes()
+        ) { sort, notes ->
             _isEmpty.postValue(notes.isEmpty())
             _notes.value = notes
-            _helperNotes = mutableListOf<ToDoData>().apply {
-                addAll(notes)
+            sortNotes(sort)
+            _helperNotes?.let {
+                it.clear()
+                it.addAll(_notes.value)
             }
         }.flowOn(Dispatchers.IO).launchIn(viewModelScope)
     }
@@ -182,10 +201,8 @@ class ToDoViewModel @Inject constructor(
         data class DeleteNote(val toDoData: ToDoData) : ToDoUiEvent()
         data class ValidateForm(val title: String, val description: String) : ToDoUiEvent()
         data class FilterNotes(val query: String) : ToDoUiEvent()
+        data class SortNotes(val priority: Priority) : ToDoUiEvent()
         object OnFilterClear : ToDoUiEvent()
-        object SortByHighPriority : ToDoUiEvent()
-        object SortByLowPriority : ToDoUiEvent()
-        object SortByNonePriority : ToDoUiEvent()
         object DeleteAllNotes : ToDoUiEvent()
     }
 }

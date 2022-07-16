@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.*
 import com.bikcodeh.todoapp.R
+import com.bikcodeh.todoapp.data.model.Priority
 import com.bikcodeh.todoapp.data.model.ToDoData
 import com.bikcodeh.todoapp.databinding.FragmentNotesBinding
 import com.bikcodeh.todoapp.ui.adapter.ToDoAdapter
@@ -94,19 +95,17 @@ class NotesFragment : Fragment() {
                 binding.clearTextIvBtn.isVisible = text.toString().isNotEmpty()
                 if (text.toString().isNotEmpty()) {
                     binding.addNoteFab.hide()
+                    binding.notesMenuBtn.visibility = View.INVISIBLE
                     toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.FilterNotes(text.toString()))
                 } else {
                     binding.addNoteFab.show()
+                    binding.notesMenuBtn.visibility = View.VISIBLE
                     binding.noDataGroup.isVisible = toDoViewModel.notes.value.isEmpty()
                     toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.OnFilterClear)
                 }
             }
 
-            override fun afterTextChanged(text: Editable?) {
-                if (text.toString().isEmpty()) {
-                    toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.OnFilterClear)
-                }
-            }
+            override fun afterTextChanged(text: Editable?) {}
         })
 
         binding.clearTextIvBtn.setOnClickListener {
@@ -126,15 +125,15 @@ class NotesFragment : Fragment() {
                     true
                 }
                 R.id.menu_priority_high -> {
-                    toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.SortByHighPriority)
+                    toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.SortNotes(Priority.HIGH))
                     true
                 }
                 R.id.menu_priority_low -> {
-                    toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.SortByLowPriority)
+                    toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.SortNotes(Priority.LOW))
                     true
                 }
                 R.id.menu_priority_none -> {
-                    toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.SortByNonePriority)
+                    toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.SortNotes(Priority.LOW))
                     true
                 }
                 else -> false
