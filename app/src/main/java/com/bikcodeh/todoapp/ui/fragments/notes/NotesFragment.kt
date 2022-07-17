@@ -93,11 +93,12 @@ class NotesFragment : Fragment() {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
                 if (text.toString().isNotEmpty()) {
                     binding.addNoteFab.hide()
-                    binding.notesMenuBtn.initAnimation(R.anim.fade_out)
-                    binding.clearTextIvBtn.initAnimation(R.anim.fade_in)
                     toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.FilterNotes(text.toString()))
+                    binding.notesMenuBtn.initAnimation(R.anim.hide)
+                    binding.clearTextIvBtn.initAnimation(R.anim.show)
                 } else {
                     binding.addNoteFab.show()
                     binding.notesMenuBtn.initAnimation(R.anim.fade_in)
