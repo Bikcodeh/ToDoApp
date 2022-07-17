@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ToDoApp</string>
+    <string name="app_name">Biknotes</string>
 
     <string name="add_note">Add note</string>
     <string name="no_data">No data</string>
