@@ -5,4 +5,10 @@
     </style>
 
     <style name="Theme.ToDoApp" parent="Base.Theme.ToDoApp" />
+    <style name="EditTextSearch">
+        <item name="android:background">@drawable/bg_search</item>
+    </style>
+    <style name="EditTextInput">
+        <item name="android:background">@drawable/custom_input</item>
+    </style>
 </resources>
