@@ -73,6 +73,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/notesTitleTv">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/searchContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_search">

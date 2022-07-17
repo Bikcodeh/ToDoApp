@@ -189,10 +189,12 @@ class NotesFragment : Fragment() {
         toDoViewModel.isEmpty.observe(viewLifecycleOwner) {
             isEmpty = it
             binding.noDataGroup.isVisible = it
+            binding.searchContainer.isVisible = !it
             if (isEmpty) {
-                binding.notesMenuBtn.visibility = View.INVISIBLE
+                binding.notesMenuBtn.initAnimation(R.anim.fade_out)
+
             } else {
-                binding.notesMenuBtn.visibility = View.VISIBLE
+                binding.notesMenuBtn.initAnimation(R.anim.fade_in)
             }
         }
         observeFlows { scope ->
