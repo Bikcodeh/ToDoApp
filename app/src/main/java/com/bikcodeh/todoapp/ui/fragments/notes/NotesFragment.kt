@@ -20,6 +20,7 @@ import com.bikcodeh.todoapp.data.model.Priority
 import com.bikcodeh.todoapp.data.model.ToDoData
 import com.bikcodeh.todoapp.databinding.FragmentNotesBinding
 import com.bikcodeh.todoapp.ui.adapter.ToDoAdapter
+import com.bikcodeh.todoapp.ui.util.initAnimation
 import com.bikcodeh.todoapp.ui.util.observeFlows
 import com.bikcodeh.todoapp.ui.viewmodel.ToDoViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -92,14 +93,15 @@ class NotesFragment : Fragment() {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                binding.clearTextIvBtn.isVisible = text.toString().isNotEmpty()
                 if (text.toString().isNotEmpty()) {
                     binding.addNoteFab.hide()
-                    binding.notesMenuBtn.visibility = View.INVISIBLE
+                    binding.notesMenuBtn.initAnimation(R.anim.fade_out)
+                    binding.clearTextIvBtn.initAnimation(R.anim.fade_in)
                     toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.FilterNotes(text.toString()))
                 } else {
                     binding.addNoteFab.show()
-                    binding.notesMenuBtn.visibility = View.VISIBLE
+                    binding.notesMenuBtn.initAnimation(R.anim.fade_in)
+                    binding.clearTextIvBtn.initAnimation(R.anim.fade_out)
                     binding.noDataGroup.isVisible = toDoViewModel.notes.value.isEmpty()
                     toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.OnFilterClear)
                 }
