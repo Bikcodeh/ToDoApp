@@ -21,6 +21,7 @@
 - MVVM
 - Repository pattern
 - StateFlow
+- Material Design 3
 - Data store
 - Navigation component
 - Dagger Hilt (Dependency injection)
