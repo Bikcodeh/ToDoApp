@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -46,6 +47,19 @@ class NotesFragment : Fragment() {
     }
     private val toDoViewModel: ToDoViewModel by viewModels()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (toDoViewModel.isSelecting) {
+                    todoAdapter.displaySelectors(display = false, unSelect = false)
+                } else {
+                    activity?.finish()
+                }
+            }
+        })
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -68,7 +82,11 @@ class NotesFragment : Fragment() {
 
     private fun setListener() {
 
-        binding.notesRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.notesDelete.setOnClickListener {
+
+        }
+
+        /*binding.notesRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (dy > 0) {
@@ -87,7 +105,7 @@ class NotesFragment : Fragment() {
                     binding.addNoteFab.show()
                 }
             }
-        })
+        })*/
 
         binding.searchNote.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -154,6 +172,7 @@ class NotesFragment : Fragment() {
         binding.notesRecyclerView.apply {
             layoutManager = StaggeredGridLayoutManager(2, 1)
             adapter = todoAdapter
+            setItemViewCacheSize(100)
             itemAnimator = SlideInUpAnimator().apply {
                 addDuration = 300
             }
@@ -203,6 +222,26 @@ class NotesFragment : Fragment() {
                     binding.notesRecyclerView.isVisible = notes.isNotEmpty()
                     binding.noDataGroup.isVisible = notes.isEmpty()
                     todoAdapter.submitList(notes)
+                }
+            }
+
+            scope.launch {
+                todoAdapter.isSelectedSomeItem.collect { isSomeItemSelected ->
+                    binding.searchNote.isEnabled = !isSomeItemSelected
+                    binding.notesDelete.isEnabled = isSomeItemSelected
+                    binding.notesMenuBtn.isEnabled = !isSomeItemSelected
+                    if (isSomeItemSelected) {
+                        binding.addNoteFab.hide()
+                        binding.notesMenuBtn.initAnimation(R.anim.hide)
+                        binding.notesDelete.initAnimation(R.anim.fade_in)
+                        binding.notesDelete.visibility = View.VISIBLE
+                    } else {
+                        binding.notesDelete.initAnimation(R.anim.fade_out)
+                        binding.notesDelete.visibility = View.GONE
+                        binding.notesMenuBtn.initAnimation(R.anim.show)
+                        binding.addNoteFab.show()
+                    }
+                    toDoViewModel.setIsEditing(isSomeItemSelected)
                 }
             }
         }

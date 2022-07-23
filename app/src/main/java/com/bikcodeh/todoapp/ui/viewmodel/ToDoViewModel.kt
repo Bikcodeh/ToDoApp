@@ -21,6 +21,9 @@ class ToDoViewModel @Inject constructor(
     private val toDoRepository: ToDoRepository
 ) : ViewModel() {
 
+    var isSelecting: Boolean = false
+        private set
+
     private var _helperNotes: MutableList<ToDoData>? = null
 
     private val _notes: MutableStateFlow<List<ToDoData>> = MutableStateFlow(emptyList())
@@ -43,6 +46,9 @@ class ToDoViewModel @Inject constructor(
     private val _isEmpty: MutableLiveData<Boolean> = MutableLiveData(true)
     val isEmpty: LiveData<Boolean> get() = _isEmpty
 
+    fun setIsEditing(isEditing: Boolean) {
+        isSelecting = isEditing
+    }
 
     fun onEvent(event: ToDoUiEvent) {
         when (event) {

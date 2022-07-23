@@ -39,6 +39,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/notesMenuBtn" />
 
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/notesMenuBtn"
                     style="@style/Widget.Material3.Button.TextButton"
@@ -55,6 +56,29 @@
                     app:backgroundTint="@android:color/transparent"
                     app:elevation="4dp"
                     app:icon="@drawable/ic_more_vertical"
+                    app:iconGravity="textStart"
+                    app:iconPadding="-0.5dp"
+                    app:iconSize="24dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/notesDelete"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:contentDescription="@string/back"
+                    android:gravity="center_horizontal"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:visibility="gone"
+                    app:backgroundTint="@android:color/transparent"
+                    app:elevation="4dp"
+                    app:icon="@drawable/ic_delete"
                     app:iconGravity="textStart"
                     app:iconPadding="-0.5dp"
                     app:iconSize="24dp"
