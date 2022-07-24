@@ -83,7 +83,7 @@ class NotesFragment : Fragment() {
     private fun setListener() {
 
         binding.notesDelete.setOnClickListener {
-
+            findNavController().navigate(R.id.action_notesFragment_to_deleteFragment)
         }
 
         /*binding.notesRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
