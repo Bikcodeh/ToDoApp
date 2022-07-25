@@ -101,7 +101,7 @@
                             android:layout_height="wrap_content"
                             android:background="@null"
                             android:src="@drawable/ic_clear_text"
-                            android:visibility="invisible"
+                            android:visibility="gone"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 

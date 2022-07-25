@@ -97,18 +97,27 @@ class NotesFragment : Fragment() {
                 if (text.toString().isNotEmpty()) {
                     binding.addNoteFab.hide()
                     toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.FilterNotes(text.toString()))
-                    binding.notesMenuBtn.initAnimation(R.anim.hide)
-                    binding.clearTextIvBtn.initAnimation(R.anim.show)
                 } else {
                     binding.addNoteFab.show()
-                    binding.notesMenuBtn.initAnimation(R.anim.fade_in)
-                    binding.clearTextIvBtn.initAnimation(R.anim.fade_out)
                     binding.noDataGroup.isVisible = toDoViewModel.notes.value.isEmpty()
                     toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.OnFilterClear)
                 }
             }
 
-            override fun afterTextChanged(text: Editable?) {}
+            override fun afterTextChanged(text: Editable?) {
+                if (text.toString().isNotEmpty()) {
+                    binding.notesMenuBtn.initAnimation(R.anim.hide)
+                    binding.clearTextIvBtn.initAnimation(R.anim.show)
+                    binding.clearTextIvBtn.visibility = View.VISIBLE
+                    binding.clearTextIvBtn.isEnabled = true
+
+                } else {
+                    binding.notesMenuBtn.initAnimation(R.anim.fade_in)
+                    binding.clearTextIvBtn.initAnimation(R.anim.fade_out)
+                    binding.clearTextIvBtn.visibility = View.GONE
+                    binding.clearTextIvBtn.isEnabled = false
+                }
+            }
         })
 
         binding.clearTextIvBtn.setOnClickListener {
