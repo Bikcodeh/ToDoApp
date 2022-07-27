@@ -24,7 +24,16 @@ class ToDoViewModel @Inject constructor(
     var isSelecting: Boolean = false
         private set
 
-    private var _helperNotes: MutableList<ToDoData>? = null
+    var isSearching: Boolean = false
+        private set
+
+    fun setIsSearching(searching: Boolean) {
+        isSearching = searching
+    }
+
+    fun setIsSelecting(selecting: Boolean) {
+        isSelecting = selecting
+    }
 
     private val _notes: MutableStateFlow<List<ToDoData>> = MutableStateFlow(emptyList())
     val notes: StateFlow<List<ToDoData>>
@@ -43,13 +52,6 @@ class ToDoViewModel @Inject constructor(
     val updateNoteUiEvent: StateFlow<UpdateNoteUiEvent>
         get() = _updateNoteUiEvent
 
-    private val _isEmpty: MutableLiveData<Boolean> = MutableLiveData(true)
-    val isEmpty: LiveData<Boolean> get() = _isEmpty
-
-    fun setIsEditing(isEditing: Boolean) {
-        isSelecting = isEditing
-    }
-
     fun onEvent(event: ToDoUiEvent) {
         when (event) {
             ToDoUiEvent.GetAllNotes -> getAllNotes()
@@ -60,20 +62,9 @@ class ToDoViewModel @Inject constructor(
             ToDoUiEvent.DeleteAllNotes -> deleteAllNotes()
             is ToDoUiEvent.FilterNotes -> filterNotes(event.query)
             ToDoUiEvent.OnFilterClear -> {
-                _helperNotes?.let {
-                    _notes.value = it
-                }
-                _helperNotes = null
+                getAllNotes()
             }
             is ToDoUiEvent.SortNotes -> sortNotes(event.priority)
-        }
-    }
-
-    private fun saveBackup(notes: List<ToDoData>) {
-        if (_helperNotes == null) {
-            _helperNotes = mutableListOf<ToDoData>().apply {
-                addAll(notes)
-            }
         }
     }
 
@@ -95,16 +86,9 @@ class ToDoViewModel @Inject constructor(
     }
 
     private fun filterNotes(query: String) {
-        saveBackup(_notes.value)
-        _helperNotes?.let {
-            _notes.update { notes ->
-                it.filter {
-                    it.title.contains(query) || it.description.contains(
-                        query
-                    )
-                }
-            }
-        }
+        toDoRepository.searchNotes(query).map {
+            _notes.value = it
+        }.flowOn(Dispatchers.IO).launchIn(viewModelScope)
     }
 
     private fun validateForm(title: String, description: String) {
@@ -150,13 +134,8 @@ class ToDoViewModel @Inject constructor(
         toDoRepository.getSavedSort().combine(
             toDoRepository.getAllNotes()
         ) { sort, notes ->
-            _isEmpty.postValue(notes.isEmpty())
             _notes.value = notes
             sortNotes(sort)
-            _helperNotes?.let {
-                it.clear()
-                it.addAll(_notes.value)
-            }
         }.flowOn(Dispatchers.IO).launchIn(viewModelScope)
     }
 
@@ -177,6 +156,12 @@ class ToDoViewModel @Inject constructor(
     private fun deleteAllNotes() {
         viewModelScope.launch(Dispatchers.IO) {
             toDoRepository.deleteAll()
+        }
+    }
+
+    fun deleteItems(items: List<ToDoData>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            toDoRepository.deleteItems(items)
         }
     }
 

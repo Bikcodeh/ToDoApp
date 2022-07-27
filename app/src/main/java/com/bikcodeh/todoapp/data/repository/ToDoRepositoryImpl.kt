@@ -39,4 +39,12 @@ class ToDoRepositoryImpl @Inject constructor(
     override fun getSavedSort(): Flow<Priority> {
         return dataStoreOperations.getSavedSort()
     }
+
+    override suspend fun deleteItems(items: List<ToDoData>) {
+        toDoDao.deleteItems(items.map { it.id })
+    }
+
+    override fun searchNotes(query: String): Flow<List<ToDoData>> {
+        return toDoDao.searchNotes("%$query%")
+    }
 }

@@ -12,4 +12,6 @@ interface ToDoRepository {
     suspend fun deleteAll()
     suspend fun saveSort(sort: String)
     fun getSavedSort(): Flow<Priority>
+    suspend fun deleteItems(items: List<ToDoData>)
+    fun searchNotes(query: String): Flow<List<ToDoData>>
 }
