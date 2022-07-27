@@ -23,6 +23,9 @@
             app:exitAnim="@anim/to_right"
             app:popEnterAnim="@anim/from_right"
             app:popExitAnim="@anim/to_left" />
+        <action
+            android:id="@+id/action_notesFragment_to_deleteFragment"
+            app:destination="@id/deleteFragment" />
     </fragment>
     <fragment
         android:id="@+id/addFragment"
@@ -49,4 +52,13 @@
             android:name="toDoItem"
             app:argType="com.bikcodeh.todoapp.data.model.ToDoData" />
     </fragment>
+    <dialog
+        android:id="@+id/deleteFragment"
+        android:name="com.bikcodeh.todoapp.BottomSheetDialogDeleteFragment"
+        android:label="fragment_bottom_sheet_dialog_delete"
+        tools:layout="@layout/fragment_bottom_sheet_dialog_delete" >
+        <argument
+            android:name="itemsToDelete"
+            app:argType="com.bikcodeh.todoapp.data.model.ToDoData[]" />
+    </dialog>
 </navigation>

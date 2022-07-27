@@ -21,4 +21,10 @@ interface ToDoDao {
 
     @Query("DELETE FROM tododata")
     suspend fun deleteAll()
+
+    @Query("DELETE FROM tododata WHERE id in (:items) ")
+    suspend fun deleteItems(items: List<Int>)
+
+    @Query("SELECT * FROM tododata WHERE title LIKE :query")
+    fun searchNotes(query: String): Flow<List<ToDoData>>
 }

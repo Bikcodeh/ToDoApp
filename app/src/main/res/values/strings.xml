@@ -16,6 +16,10 @@
     <string name="update_note">Update</string>
     <string name="delete_note">Delete</string>
     <string name="delete_note_title">Delete %1$s?</string>
+    <plurals name="delete_items">
+        <item quantity="one">Delete %1$s item?</item>
+        <item quantity="other">Delete %1$s items?</item>
+    </plurals>
     <string name="delete_all_notes_title">Delete all?</string>
     <string name="title_required">Title required.</string>
     <string name="description_required">Description required</string>
@@ -36,4 +40,8 @@
         <item>Medium Priority</item>
         <item>Low Priority</item>
     </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_note_title_bottom">Delete note</string>
 </resources>

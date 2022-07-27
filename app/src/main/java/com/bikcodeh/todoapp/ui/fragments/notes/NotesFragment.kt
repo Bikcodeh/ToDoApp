@@ -6,11 +6,16 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.PopupMenu
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -18,15 +23,20 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bikcodeh.todoapp.R
 import com.bikcodeh.todoapp.data.model.Priority
 import com.bikcodeh.todoapp.data.model.ToDoData
+import com.bikcodeh.todoapp.databinding.FragmentBottomSheetDialogDeleteBinding
 import com.bikcodeh.todoapp.databinding.FragmentNotesBinding
 import com.bikcodeh.todoapp.ui.adapter.ToDoAdapter
 import com.bikcodeh.todoapp.ui.util.initAnimation
 import com.bikcodeh.todoapp.ui.util.observeFlows
 import com.bikcodeh.todoapp.ui.viewmodel.ToDoViewModel
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 @AndroidEntryPoint
@@ -36,58 +46,53 @@ class NotesFragment : Fragment() {
     private val binding: FragmentNotesBinding
         get() = _binding!!
 
-    private var isEmpty: Boolean = true
-
     private val todoAdapter: ToDoAdapter by lazy {
         ToDoAdapter {
             val action = NotesFragmentDirections.actionNotesFragmentToUpdateFragment(it)
             findNavController().navigate(action)
         }
     }
-    private val toDoViewModel: ToDoViewModel by viewModels()
+    private val toDoViewModel: ToDoViewModel by activityViewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (toDoViewModel.isSelecting) {
+                    todoAdapter.displaySelectors(display = false, unSelect = false)
+                    todoAdapter.setIsEditing(false)
+                } else {
+                    activity?.finish()
+                }
+            }
+        })
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentNotesBinding.inflate(inflater, container, false)
-        binding.lifecycleOwner = this
-        binding.toDoViewModel = toDoViewModel
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.notesMenuBtn.setOnClickListener {
-            showMenu(it)
-        }
-        setListener()
         setUpViews()
         setCollectors()
+        setListener()
     }
 
     private fun setListener() {
 
-        binding.notesRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0) {
-                    binding.addNoteFab.hide();
-                } else if (dy < 0) {
-                    binding.addNoteFab.show()
-                } else {
-                    binding.addNoteFab.isVisible = binding.searchNote.text.toString().isEmpty()
-                }
+        binding.addNoteFab.setOnClickListener {
+            findNavController().navigate(R.id.action_notesFragment_to_addFragment)
+        }
 
-            }
-
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    binding.addNoteFab.show()
-                }
-            }
-        })
+        binding.notesDelete.setOnClickListener {
+            val action = NotesFragmentDirections.actionNotesFragmentToDeleteFragment(todoAdapter.getItemsToDelete().toTypedArray())
+            findNavController().navigate(action)
+        }
 
         binding.searchNote.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -96,33 +101,41 @@ class NotesFragment : Fragment() {
 
                 if (text.toString().isNotEmpty()) {
                     binding.addNoteFab.hide()
-                    toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.FilterNotes(text.toString()))
+                    binding.clearTextIvBtn.initAnimation(R.anim.show)
+                    binding.clearTextIvBtn.visibility = View.VISIBLE
                 } else {
                     binding.addNoteFab.show()
+                    binding.clearTextIvBtn.initAnimation(R.anim.fade_out)
+                    binding.clearTextIvBtn.visibility = View.GONE
                     binding.noDataGroup.isVisible = toDoViewModel.notes.value.isEmpty()
-                    toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.OnFilterClear)
                 }
             }
 
             override fun afterTextChanged(text: Editable?) {
-                if (text.toString().isNotEmpty()) {
-                    binding.notesMenuBtn.initAnimation(R.anim.hide)
-                    binding.clearTextIvBtn.initAnimation(R.anim.show)
-                    binding.clearTextIvBtn.visibility = View.VISIBLE
-                    binding.clearTextIvBtn.isEnabled = true
-
-                } else {
+                if (text.toString().isEmpty()) {
                     binding.notesMenuBtn.initAnimation(R.anim.fade_in)
-                    binding.clearTextIvBtn.initAnimation(R.anim.fade_out)
-                    binding.clearTextIvBtn.visibility = View.GONE
-                    binding.clearTextIvBtn.isEnabled = false
+                    binding.notesMenuBtn.visibility = View.VISIBLE
+                    binding.notesMenuBtn.isEnabled = true
+                    toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.OnFilterClear)
+                    toDoViewModel.setIsSearching(false)
+                } else {
+                    binding.notesMenuBtn.initAnimation(R.anim.hide)
+                    binding.notesMenuBtn.visibility = View.INVISIBLE
+                    binding.notesMenuBtn.isEnabled = false
+                    toDoViewModel.setIsSearching(true)
+                    toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.FilterNotes(text.toString()))
                 }
             }
         })
 
         binding.clearTextIvBtn.setOnClickListener {
             binding.searchNote.text = null
+            toDoViewModel.setIsSearching(false)
             toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.OnFilterClear)
+        }
+
+        binding.notesMenuBtn.setOnClickListener {
+            showMenu(it)
         }
     }
 
@@ -134,18 +147,22 @@ class NotesFragment : Fragment() {
             when (menuItem.itemId) {
                 R.id.menu_delete_all -> {
                     confirmDeleteAll()
+                    popUp.dismiss()
                     true
                 }
                 R.id.menu_priority_high -> {
                     toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.SortNotes(Priority.HIGH))
+                    popUp.dismiss()
                     true
                 }
                 R.id.menu_priority_low -> {
                     toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.SortNotes(Priority.LOW))
+                    popUp.dismiss()
                     true
                 }
                 R.id.menu_priority_none -> {
                     toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.SortNotes(Priority.LOW))
+                    popUp.dismiss()
                     true
                 }
                 else -> false
@@ -174,7 +191,7 @@ class NotesFragment : Fragment() {
         val swipeToDeleteCallback = object : SwipeToDelete() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 //Delete item
-                val deletedItem = todoAdapter.currentList[viewHolder.adapterPosition]
+                val deletedItem = todoAdapter.getNotes()[viewHolder.adapterPosition]
                 toDoViewModel.onEvent(ToDoViewModel.ToDoUiEvent.DeleteNote(deletedItem))
                 //Restore deleted item
                 restoreDeletedData(deletedItem, viewHolder.adapterPosition)
@@ -195,23 +212,69 @@ class NotesFragment : Fragment() {
     }
 
     private fun setCollectors() {
-        toDoViewModel.isEmpty.observe(viewLifecycleOwner) {
-            isEmpty = it
-            binding.noDataGroup.isVisible = it
-            binding.searchContainer.isVisible = !it
-            if (isEmpty) {
-                binding.notesMenuBtn.initAnimation(R.anim.fade_out)
-
-            } else {
-                binding.notesMenuBtn.initAnimation(R.anim.fade_in)
-            }
-        }
         observeFlows { scope ->
             scope.launch {
                 toDoViewModel.notes.collect { notes ->
                     binding.notesRecyclerView.isVisible = notes.isNotEmpty()
                     binding.noDataGroup.isVisible = notes.isEmpty()
-                    todoAdapter.submitList(notes)
+                    todoAdapter.setData(notes)
+                    todoAdapter.notifyDataSetChanged()
+
+                    if (toDoViewModel.isSearching) {
+                        binding.notesMenuBtn.visibility = View.INVISIBLE
+                        binding.notesMenuBtn.initAnimation(R.anim.hide)
+                        binding.notesMenuBtn.isEnabled = false
+                    } else {
+                        if (notes.isEmpty()) {
+                            binding.notesMenuBtn.visibility = View.INVISIBLE
+                            binding.notesMenuBtn.initAnimation(R.anim.hide)
+                            binding.notesMenuBtn.isEnabled = false
+                            binding.searchContainer.visibility = View.GONE
+
+                        } else {
+                            binding.notesMenuBtn.visibility = View.VISIBLE
+                            binding.notesMenuBtn.initAnimation(R.anim.show)
+                            binding.notesMenuBtn.isEnabled = true
+                            binding.searchContainer.visibility = View.VISIBLE
+                        }
+                    }
+
+                    if (toDoViewModel.isSelecting) {
+                        todoAdapter.setIsEditing(false)
+                    }
+                }
+            }
+
+            scope.launch {
+                todoAdapter.isSelectedSomeItem.collect { isSomeItemSelected ->
+                    binding.notesDelete.isEnabled = isSomeItemSelected
+                }
+            }
+
+            scope.launch {
+                todoAdapter.isEditing.collect { isEditing ->
+                        toDoViewModel.setIsSelecting(isEditing)
+                        if (isEditing) {
+                            binding.notesDelete.visibility = View.VISIBLE
+                            binding.searchNote.isEnabled = false
+                            binding.addNoteFab.hide()
+                            binding.notesMenuBtn.initAnimation(R.anim.hide)
+                            binding.notesMenuBtn.visibility = View.INVISIBLE
+                            binding.notesMenuBtn.isEnabled = false
+                        } else {
+                            if (todoAdapter.getNotes().isEmpty()) {
+                                binding.notesMenuBtn.initAnimation(R.anim.hide)
+                                binding.notesMenuBtn.visibility = View.INVISIBLE
+                                binding.notesMenuBtn.isEnabled = false
+                            } else {
+                                binding.notesMenuBtn.visibility = View.VISIBLE
+                                binding.notesMenuBtn.initAnimation(R.anim.fade_in)
+                                binding.notesMenuBtn.isEnabled = true
+                            }
+                            binding.notesDelete.visibility = View.GONE
+                            binding.searchNote.isEnabled = true
+                            binding.addNoteFab.show()
+                        }
                 }
             }
         }

@@ -14,5 +14,7 @@ data class ToDoData(
     var title: String,
     var priority: Priority,
     var description: String,
-    var date: Long = System.currentTimeMillis()
+    var date: Long = System.currentTimeMillis(),
+    var isSelected: Boolean = false,
+    var displaySelector: Boolean = false
 ): Parcelable

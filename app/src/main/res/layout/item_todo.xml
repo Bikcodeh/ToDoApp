@@ -4,12 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="toDoData"
             type="com.bikcodeh.todoapp.data.model.ToDoData" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/todoItemContainer"
         style="?attr/materialCardViewFilledStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,6 +24,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp">
+
+            <CheckBox
+                android:id="@+id/todoCheckboxItem"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginEnd="-5dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:visibility="visible" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/priorityIndicator"

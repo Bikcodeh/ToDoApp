@@ -27,13 +27,16 @@
         <entry key="..\:/Users/victo/AndroidStudioProjects/ToDoApp/app/src/main/res/drawable/ic_save.xml" value="0.352" />
         <entry key="..\:/Users/victo/AndroidStudioProjects/ToDoApp/app/src/main/res/drawable/ic_search.xml" value="0.1585" />
         <entry key="..\:/Users/victo/AndroidStudioProjects/ToDoApp/app/src/main/res/drawable/ic_search2.xml" value="0.1585" />
+        <entry key="..\:/Users/victo/AndroidStudioProjects/ToDoApp/app/src/main/res/drawable/rounded_corners_bottom.xml" value="0.29" />
         <entry key="..\:/Users/victo/AndroidStudioProjects/ToDoApp/app/src/main/res/layout/activity_main.xml" value="0.35052083333333334" />
         <entry key="..\:/Users/victo/AndroidStudioProjects/ToDoApp/app/src/main/res/layout/fragment_add.xml" value="0.25" />
-        <entry key="..\:/Users/victo/AndroidStudioProjects/ToDoApp/app/src/main/res/layout/fragment_notes.xml" value="0.22865853658536586" />
+        <entry key="..\:/Users/victo/AndroidStudioProjects/ToDoApp/app/src/main/res/layout/fragment_bottom_sheet_dialog_delete.xml" value="0.64375" />
+        <entry key="..\:/Users/victo/AndroidStudioProjects/ToDoApp/app/src/main/res/layout/fragment_notes.xml" value="0.67" />
         <entry key="..\:/Users/victo/AndroidStudioProjects/ToDoApp/app/src/main/res/layout/fragment_update.xml" value="0.324435318275154" />
-        <entry key="..\:/Users/victo/AndroidStudioProjects/ToDoApp/app/src/main/res/layout/item_todo.xml" value="0.33" />
+        <entry key="..\:/Users/victo/AndroidStudioProjects/ToDoApp/app/src/main/res/layout/item_todo.xml" value="0.712082262210797" />
         <entry key="..\:/Users/victo/AndroidStudioProjects/ToDoApp/app/src/main/res/menu/add_fragment_menu.xml" value="0.14722222222222223" />
         <entry key="..\:/Users/victo/AndroidStudioProjects/ToDoApp/app/src/main/res/menu/list_fragment_menu.xml" value="0.35052083333333334" />
+        <entry key="..\:/Users/victo/AndroidStudioProjects/ToDoApp/app/src/main/res/menu/list_multi_selection.xml" value="0.84125" />
         <entry key="..\:/Users/victo/AndroidStudioProjects/ToDoApp/app/src/main/res/xml/fragment_add_scene.xml" value="0.35052083333333334" />
       </map>
     </option>
